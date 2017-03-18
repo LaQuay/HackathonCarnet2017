@@ -33,7 +33,7 @@ import java.util.List;
 
 public class VenueFragment extends Fragment {
 
-    public final static String TAG = MainFragmentActivity.class.getSimpleName();
+    public final static String TAG = VenueFragment.class.getSimpleName();
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};

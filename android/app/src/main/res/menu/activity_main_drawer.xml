@@ -16,6 +16,11 @@
             android:id="@+id/nav_by_filter"
             android:icon="@drawable/ic_filter_grey600_24dp"
             android:title="Search Services" />
+
+        <item
+            android:id="@+id/nav_by_discounts"
+            android:icon="@drawable/ic_ticket_percent_grey600_24dp"
+            android:title="Search Discounts" />
     </group>
 
 </menu>

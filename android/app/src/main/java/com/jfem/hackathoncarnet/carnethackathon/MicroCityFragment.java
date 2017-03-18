@@ -31,12 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MicroCityFragment extends Fragment {
-
-    public final static String TAG = MainFragmentActivity.class.getSimpleName();
+    public final static String TAG = MicroCityFragment.class.getSimpleName();
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
-
     private List<MicroCity> mData;
 
     public static MicroCityFragment newInstance() {

@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_by_filter) {
             fragment = VenueFragment.newInstance();
             fragmentTAG = VenueFragment.TAG;
+        } else if (id == R.id.nav_by_discounts) {
+            fragment = DiscountsFragment.newInstance();
+            fragmentTAG = DiscountsFragment.TAG;
         }
 
         if (fragment != null) {

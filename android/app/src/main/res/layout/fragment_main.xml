@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        card_view:cardCornerRadius="4dp"
+        card_view:contentPadding="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_menu_send" />
+
+            <TextView
+                android:id="@+id/fragment_main_your_location_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Your location"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/fragment_main_your_location_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_main_your_location_label"
+                android:layout_marginTop="5dp"
+                android:text="Carrer default numero 123"
+                android:textSize="16sp" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/fragment_main_map_google"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_below="@id/fragment_main_your_location_text"
+                android:layout_marginTop="5dp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

@@ -2,22 +2,53 @@
   {
     "name": "Centre Comercial Glòries",
     "coordinates": {
-      "lat": 2.19103419999999,
-      "lng": 41.4050329
+      "lat": 41.4050329,
+      "lng": 2.19103419999999
+    },
+    "services": {
+      "mobility": [
+        {
+          "name": "bus",
+          "positioning": [
+            {
+              "name": "Diagonal - Roc Boronat",
+              "schedule": {
+                "start": "06:00",
+                "end": "23:00",
+                "frequency": "00:15"
+              },
+              "lat": 41.404588,
+              "lng": 2.191274
+            },
+            {
+              "name": "Diagonal - Ciutat de Granada",
+              "schedule": {
+                "start": "06:00",
+                "end": "23:00",
+                "frequency": "00:15"
+              },
+              "lat": 41.404211,
+              "lng": 2.191173
+            }
+          ]
+        }
+      ],
+      "car": [],
+      "leisure": []
     }
   },
   {
     "name": "L'illa Diagonal",
     "coordinates": {
-      "lat": 2.13507600000003,
-      "lng": 41.3896623
+      "lat": 41.3896623,
+      "lng": 2.13507600000003
     }
   },
   {
     "name": "Gran Via 2 A",
     "coordinates": {
-      "lat": 2.12894400000005,
-      "lng": 41.359381
+      "lat": 41.359381,
+      "lng": 2.12894400000005
     }
   }
 ]

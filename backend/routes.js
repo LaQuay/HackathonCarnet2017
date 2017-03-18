@@ -4,7 +4,6 @@ module.exports = function (app) {
 
     const foursquare = (require('foursquarevenues'))(process.env.FS_KEY, process.env.FS_SKEY);
     const fs = require('fs');
-
     /*---- Routes ----*/
 
     app.get('/bigiot/access/microcities', function (req, res) {
@@ -14,7 +13,6 @@ module.exports = function (app) {
             function getVenues(callback) {
                 let calls = microcities.length;
                 microcities.forEach(function(microcity, index, microcities) {
-                    console.log(microcities);
                     let positionQuerry = {ll : microcity.coordinates.lat + ',' + microcity.coordinates.lng};
                     foursquare.getVenues(positionQuerry, function (err2, results) {
                         treatError(res, err2);
@@ -35,7 +33,6 @@ module.exports = function (app) {
     });
 
     app.get('/bigiot/access/services', function (req, res) {
-        console.log(req.query);
         foursquare.getVenues(req.query, function (err, results) {
             treatError(res, err);
             res.json(buildFilteredVenues(results.response.venues));

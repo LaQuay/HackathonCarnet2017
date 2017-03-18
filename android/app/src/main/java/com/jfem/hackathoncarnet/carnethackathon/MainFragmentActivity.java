@@ -258,10 +258,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 if (dist < 100000) {
                     Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);
-                    builder.setMessage("Do you want to see the services available?");
+                    builder.setMessage("Do you want to see the available services?");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();

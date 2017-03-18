@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (app) {
 
     const foursquare = (require('foursquarevenues'))(process.env.FS_KEY, process.env.FS_SKEY);
@@ -28,10 +30,10 @@ module.exports = function (app) {
                 id: venue.id,
                 name: venue.name,
                 location: {
-                    address: "Av. Diagonal, 208",
-                    lat: 41.40500455145703,
-                    lng: 2.1910512815805014,
-                    distance: 49
+                    address: venue.location.address,
+                    lat: venue.location.lat,
+                    lng: venue.location.lng,
+                    distance: venue.location.distance
                 },
                 categories: buildFilteredCategories(venue.categories)
             });

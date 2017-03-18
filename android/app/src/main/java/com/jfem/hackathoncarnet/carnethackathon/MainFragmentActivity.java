@@ -37,6 +37,8 @@ import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -298,6 +300,17 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         --numDistanceInfoRequestLeft;
 
         if (this.numDistanceInfoRequestLeft == 0) {
+            Collections.sort(microCityViewArray, new Comparator<MicroCityView>() {
+                @Override public int compare(MicroCityView mcv1, MicroCityView mcv2) {
+                    if (mcv1.getTime() > mcv2.getTime()) return 1;
+                    else if (mcv1.getTime() < mcv2.getTime()) return -1;
+                    else {
+                        if (mcv1.getDistance() > mcv2.getDistance()) return 1;
+                        else return -1;
+                    }
+                }
+            });
+
             DecimalFormat df = new DecimalFormat("0.0");
             for (int i = 0; i < microCityViewArray.size(); ++i) {
                 View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);

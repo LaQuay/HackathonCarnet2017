@@ -10,11 +10,32 @@ module.exports = function (app) {
     app.get('/bigiot/access/microcities', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
             if (err) throw err;
-            res.json(JSON.parse(data.toString()));
+            let microcities =JSON.parse(data.toString());
+            function getVenues(callback) {
+                let calls = microcities.length;
+                microcities.forEach(function(microcity, index, microcities) {
+                    console.log(microcities);
+                    let positionQuerry = {ll : microcity.coordinates.lat + ',' + microcity.coordinates.lng};
+                    foursquare.getVenues(positionQuerry, function (err2, results) {
+                        treatError(res, err2);
+                        //res.json(JSON.parse(data.toString()));
+                        //res.json(buildFilteredVenues(results.response.venues));
+                        microcities[index].venues=buildFilteredVenues(results.response.venues);
+                        --calls;
+                        if (calls==0) callback();
+                    });
+                });
+            }
+            getVenues(function(){
+                //this will be run after getVenues is finished.
+                res.json(microcities);
+                // Rest of your code here.
+            });
         });
     });
 
     app.get('/bigiot/access/services', function (req, res) {
+        console.log(req.query);
         foursquare.getVenues(req.query, function (err, results) {
             treatError(res, err);
             res.json(buildFilteredVenues(results.response.venues));

@@ -1,5 +1,54 @@
 [
   {
-
+    "id": "NA",
+    "name": "Charging station",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Charging station"
+      }
+    ]
+  },
+  {
+    "id": "NA",
+    "name": "ITV",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "ITV"
+      }
+    ]
+  },
+  {
+    "id": "NA",
+    "name": "Mechanic",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Mechanic"
+      }
+    ]
+  },
+  {
+    "id": "NA",
+    "name": "Car Wash",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Car Wash"
+      }
+    ]
   }
 ]

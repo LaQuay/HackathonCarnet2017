@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,12 +19,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 
-/**
- * Created by LaQuay on 18/03/2017.
- */
+import java.util.ArrayList;
 
-public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, LocationController.OnLocationChangedListener {
+public class MainFragmentActivity extends Fragment implements OnMapReadyCallback,
+        LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
@@ -34,6 +36,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     private Location location;
     private Snackbar snackBar;
+
+    private MicroCityController microCityController;
+    private final MicroCityController.MicroCityResolvedCallback microCityResolvedCallback = this;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -59,6 +64,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
 
         mapView.getMapAsync(this);
+
+        microCityController = new MicroCityController(getContext());
+        microCityController.imageOCRRequest(microCityResolvedCallback);
 
         startLocation();
 
@@ -119,5 +127,15 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             Utility.closeSnackBar(snackBar);
             snackBar = null;
         }
+    }
+
+    public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
+        Log.e(TAG, "onMicroCityResolved");
+
+        for (int i = 0; i < microCities.size(); ++i) {
+            Log.e(TAG, microCities.get(i).toString());
+        }
+
+        Toast.makeText(getActivity(), "MicroCities", Toast.LENGTH_SHORT).show();
     }
 }

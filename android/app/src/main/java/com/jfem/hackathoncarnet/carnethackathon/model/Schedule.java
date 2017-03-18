@@ -39,6 +39,6 @@ public class Schedule {
     @Override
     public String toString()
     {
-        return "ClassPojo [start = "+start+", frequency = "+frequency+", end = "+end+"]";
+        return "[start = "+start+", frequency = "+frequency+", end = "+end+"]";
     }
 }

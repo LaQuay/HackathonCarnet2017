@@ -1,38 +1,39 @@
 package com.jfem.hackathoncarnet.carnethackathon.model;
 
+import java.util.ArrayList;
+
 public class Services {
-    private String[] car;
 
-    private String[] leisure;
+    private ArrayList<String> car;
+    private ArrayList<String> leisure;
+    private ArrayList<Mobility> mobility;
 
-    private Mobility[] mobility;
-
-    public String[] getCar ()
+    public ArrayList<String> getCar ()
     {
         return car;
     }
 
-    public void setCar (String[] car)
+    public void setCar (ArrayList<String> car)
     {
         this.car = car;
     }
 
-    public String[] getLeisure ()
+    public ArrayList<String> getLeisure ()
     {
         return leisure;
     }
 
-    public void setLeisure (String[] leisure)
+    public void setLeisure (ArrayList<String> leisure)
     {
         this.leisure = leisure;
     }
 
-    public Mobility[] getMobility ()
+    public ArrayList<Mobility> getMobility ()
     {
         return mobility;
     }
 
-    public void setMobility (Mobility[] mobility)
+    public void setMobility (ArrayList<Mobility> mobility)
     {
         this.mobility = mobility;
     }
@@ -40,6 +41,6 @@ public class Services {
     @Override
     public String toString()
     {
-        return "ClassPojo [car = "+car+", leisure = "+leisure+", mobility = "+mobility+"]";
+        return "[car = "+car+", leisure = "+leisure+", mobility = "+mobility+"]";
     }
 }

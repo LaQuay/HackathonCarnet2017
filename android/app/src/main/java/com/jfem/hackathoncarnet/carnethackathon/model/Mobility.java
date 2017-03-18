@@ -1,8 +1,8 @@
 package com.jfem.hackathoncarnet.carnethackathon.model;
 
 public class Mobility {
-    private String name;
 
+    private String name;
     private Positioning[] positioning;
 
     public String getName ()
@@ -28,6 +28,6 @@ public class Mobility {
     @Override
     public String toString()
     {
-        return "ClassPojo [name = "+name+", positioning = "+positioning+"]";
+        return "[name = "+name+", positioning = "+positioning+"]";
     }
 }

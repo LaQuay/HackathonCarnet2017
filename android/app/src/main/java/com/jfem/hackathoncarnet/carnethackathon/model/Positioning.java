@@ -50,6 +50,6 @@ public class Positioning {
     @Override
     public String toString()
     {
-        return "ClassPojo [schedule = "+schedule+", name = "+name+", lng = "+lng+", lat = "+lat+"]";
+        return "[schedule = "+schedule+", name = "+name+", lng = "+lng+", lat = "+lat+"]";
     }
 }

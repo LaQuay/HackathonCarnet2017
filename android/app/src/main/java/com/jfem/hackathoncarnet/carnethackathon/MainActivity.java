@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity
         if (!locationServiceAvailable) {
             requestLocationPermissions();
         }
-
-        MicroCityController microCityController = new MicroCityController();
     }
 
     public void requestLocationPermissions() {

@@ -2,25 +2,25 @@ package com.jfem.hackathoncarnet.carnethackathon.model;
 
 public class Coordinates {
 
-    private String lng;
-    private String lat;
+    private double lng;
+    private double lat;
 
-    public String getLng ()
+    public double getLng ()
     {
         return lng;
     }
 
-    public void setLng (String lng)
+    public void setLng (double lng)
     {
         this.lng = lng;
     }
 
-    public String getLat ()
+    public double getLat ()
     {
         return lat;
     }
 
-    public void setLat (String lat)
+    public void setLat (double lat)
     {
         this.lat = lat;
     }
@@ -28,6 +28,6 @@ public class Coordinates {
     @Override
     public String toString()
     {
-        return "ClassPojo [lng = "+lng+", lat = "+lat+"]";
+        return "[lng = "+lng+", lat = "+lat+"]";
     }
 }

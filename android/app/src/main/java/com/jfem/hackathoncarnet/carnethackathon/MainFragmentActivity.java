@@ -3,7 +3,6 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -198,7 +197,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         Bitmap smallMarker =
                 Bitmap.createScaledBitmap(
-                        BitmapFactory.decodeResource(getResources(), R.drawable.icon_mc),
+                        BitmapFactory.decodeResource(getResources(), R.drawable.icon_marker_microcity),
                         100, 100, false);
 
         for (int i = 0; i < microCities.size(); ++i) {
@@ -220,8 +219,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             TextView cityKmText = (TextView) microCityView.findViewById(R.id.item_microcity_distance_text);
 
             cityNameText.setText(currentMicroCity.getName());
-            cityAddressText.setText("" + currentMicroCity.getAddress());
+            cityAddressText.setText(currentMicroCity.getAddress());
             cityNumberText.setText("" + (i + 1));
+            cityTimeText.setText("1 min");
+            cityKmText.setText("10 km");
 
             microCitiesLinearContainer.addView(microCityView);
         }

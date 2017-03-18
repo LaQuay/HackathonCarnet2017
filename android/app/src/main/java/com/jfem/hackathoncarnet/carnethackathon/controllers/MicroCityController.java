@@ -8,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.model.Mobility;
@@ -52,7 +51,7 @@ public class MicroCityController {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "That didn't work!");
+                Log.e(TAG, "That didn't work!" + error.getMessage());
             }
         });
 
@@ -66,10 +65,14 @@ public class MicroCityController {
         try {
             for (int i = 0; i < microCityJSONArray.length(); ++i) {
                 JSONObject microCityJSONObject = microCityJSONArray.getJSONObject(i);
+
                 MicroCity microCity = new MicroCity();
 
                 // Name
                 microCity.setName(microCityJSONObject.getString("name"));
+
+                // Addresss
+                microCity.setAddress(microCityJSONObject.getString("address"));
 
                 // Coordinates
                 JSONObject coordinatesJSON = microCityJSONObject.getJSONObject("coordinates");

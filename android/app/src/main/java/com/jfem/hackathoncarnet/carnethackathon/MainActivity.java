@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
-import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -107,8 +106,9 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.main_container, fragment, fragmentTAG);
-            //if (id != R.id.nav_home)
-            ft.addToBackStack(null);
+            if (id != R.id.nav_home) {
+                ft.addToBackStack(null);
+            }
             ft.commit();
         }
 

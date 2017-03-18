@@ -27,7 +27,7 @@ public class MicroCityController {
         this.context = context;
     }
 
-    public void imageOCRRequest(final MicroCityResolvedCallback microCityResolvedCallback) {
+    public void microCityRequest(final MicroCityResolvedCallback microCityResolvedCallback) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("carnet-hack.herokuapp.com")

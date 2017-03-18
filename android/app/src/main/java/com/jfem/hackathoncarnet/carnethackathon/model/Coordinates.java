@@ -1,5 +1,7 @@
 package com.jfem.hackathoncarnet.carnethackathon.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Coordinates {
 
     private double lng;
@@ -24,6 +26,8 @@ public class Coordinates {
     }
 
     public void setLatLng (double lat, double lng) {setLat(lat);setLng(lng);}
+
+    public LatLng getLatLng() { return new LatLng(getLat(),getLng());}
 
     @Override
     public String toString() {

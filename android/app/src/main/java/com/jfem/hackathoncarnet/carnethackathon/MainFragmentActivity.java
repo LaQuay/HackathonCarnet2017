@@ -34,20 +34,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.DistanceController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
+import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-        LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback {
+        LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback,
+        DistanceController.DistanceResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
@@ -67,6 +71,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private ArrayList<MicroCityView> microCityViewArray = null;
     private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
+
+    private boolean locationIsInitialized = false;
+    private int numDistanceInfoRequestLeft = 0;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -93,6 +100,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     @Override
                     public void onResponse(String response) {
                         Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                        Log.e(TAG, response);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -119,7 +127,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         mapView.getMapAsync(this);
 
         microCityController = new MicroCityController(getContext());
-        microCityController.imageOCRRequest(this);
 
         startLocation();
 
@@ -202,6 +209,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         this.location = location;
 
         setLocationReceived(location);
+        if (!locationIsInitialized) {
+            microCityController.microCityRequest(this);
+            locationIsInitialized = true;
+        }
 
         if (snackBar != null) {
             Utility.closeSnackBar(snackBar);
@@ -220,6 +231,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         microCities.add(fakeMicroCity);
         //END
 
+        numDistanceInfoRequestLeft = microCities.size();
         this.microCityViewArray = new ArrayList<>();
 
         Bitmap smallMarker =
@@ -229,44 +241,22 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         for (int i = 0; i < microCities.size(); ++i) {
             MicroCity currentMicroCity = microCities.get(i);
-            //Log.e(TAG, currentMicroCity.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
             );
-
             marker.setTag(i);
 
             microCityViewArray.add(new MicroCityView(currentMicroCity, marker));
+        }
 
-            View microCityView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
-
-            TextView cityNameText = (TextView) microCityView.findViewById(R.id.item_microcity_name_text);
-            TextView cityAddressText = (TextView) microCityView.findViewById(R.id.item_microcity_address_text);
-            TextView cityNumberText = (TextView) microCityView.findViewById(R.id.item_microcity_number_text);
-            TextView cityTimeText = (TextView) microCityView.findViewById(R.id.item_microcity_time_text);
-            TextView cityKmText = (TextView) microCityView.findViewById(R.id.item_microcity_distance_text);
-
-            cityNameText.setText(currentMicroCity.getName());
-            cityAddressText.setText(currentMicroCity.getAddress());
-            cityNumberText.setText("" + (i + 1));
-            cityTimeText.setText("1 min");
-            cityKmText.setText("10 km");
-
-            microCityView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
-
-                    Toast.makeText(getContext(),
-                            "Card clicked",
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-
-            microCitiesLinearContainer.addView(microCityView);
+        for (int i = 0; i < microCities.size(); ++i) {
+            Location loc = new Location("pp");
+            loc.setLatitude(microCities.get(i).getCoordinates().getLat());
+            loc.setLongitude(microCities.get(i).getCoordinates().getLng());
+            DistanceController.distanceRequest(getContext(), this.location, loc, this.microCityViewArray.get(i), this);
         }
     }
 
@@ -303,6 +293,46 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 }
 
                 break;
+        }
+    }
+
+    @Override
+    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityView) {
+        Log.e(TAG, "Dist: " + distanceProperties.getDistance() + " Time: " + distanceProperties.getTime());
+        microCityView.setDistance(distanceProperties.getDistance());
+        microCityView.setTime(distanceProperties.getTime());
+        --numDistanceInfoRequestLeft;
+
+        if (this.numDistanceInfoRequestLeft == 0) {
+            DecimalFormat df = new DecimalFormat("0.0");
+            for (int i = 0; i < microCityViewArray.size(); ++i) {
+                View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
+
+                TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
+                TextView cityAddressText = (TextView) mcView.findViewById(R.id.item_microcity_address_text);
+                TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
+                TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
+                TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
+
+                cityNameText.setText(microCityViewArray.get(i).getMicroCity().getName());
+                cityAddressText.setText(microCityViewArray.get(i).getMicroCity().getAddress());
+                cityNumberText.setText("" + (i + 1));
+                cityTimeText.setText(df.format(microCityViewArray.get(i).getTime()) + " min");
+                cityKmText.setText(df.format(microCityViewArray.get(i).getDistance()) + " km");
+
+                mcView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+
+                        Toast.makeText(getContext(),
+                                "Card clicked",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                microCitiesLinearContainer.addView(mcView);
+            }
         }
     }
 }

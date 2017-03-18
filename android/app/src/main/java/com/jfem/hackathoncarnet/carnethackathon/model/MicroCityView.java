@@ -5,6 +5,8 @@ import com.google.android.gms.maps.model.Marker;
 public class MicroCityView {
     private MicroCity microCity;
     private Marker marker;
+    private double time;
+    private double distance;
 
     public MicroCityView(MicroCity microCity, Marker marker) {
         this.microCity = microCity;
@@ -25,5 +27,21 @@ public class MicroCityView {
 
     public void setMarker(Marker marker) {
         this.marker = marker;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

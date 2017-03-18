@@ -250,12 +250,14 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             case 90:
                 if (resultCode == RESULT_OK) {
                     Log.e(TAG, "Navigation ok");
-                    Toast.makeText(getActivity(), "Navigation ok", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "Navigation ok", Toast.LENGTH_SHORT).show();
                 }
                 else if (resultCode == RESULT_CANCELED) {
                     Log.e(TAG, "Navigation canceled");
-                    Toast.makeText(getActivity(), "Navigation canceled", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "Navigation canceled", Toast.LENGTH_SHORT).show();
                 }
+                double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(),this.location.getLongitude()));
+                if (dist < 100000) Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
 
                 break;
         }

@@ -38,6 +38,7 @@ import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class MainFragmentActivity extends Fragment implements OnMapReadyCallback,
+public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 11;
@@ -63,8 +64,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Snackbar snackBar;
 
     private MicroCityController microCityController;
-    private ArrayList<MicroCity> microCities = null;
+    private ArrayList<MicroCityView> microCityViewArray = null;
     private LatLng endPointLatLng = null;
+    private Marker markerUserLocation;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -156,11 +158,11 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         LatLng modLatLng = new LatLng(latLng.latitude + 0.02, latLng.longitude);
         animateCamera(modLatLng);
 
-        Marker marker = mMap.addMarker(new MarkerOptions()
+        markerUserLocation = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(location.getLatitude() + ", " + location.getLongitude()));
 
-        marker.showInfoWindow();
+        markerUserLocation.showInfoWindow();
     }
 
     private void animateCamera(LatLng latLng) {
@@ -174,15 +176,24 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+        mMap.setOnMarkerClickListener(this);
+    }
 
-                startNavigationToDestination(new LatLng(marker.getPosition().latitude, marker.getPosition().longitude));
-                return true;
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        if (marker != markerUserLocation && microCityViewArray != null) {
+            for (int i = 0; i < microCityViewArray.size(); ++i) {
+                if (microCityViewArray.get(i).getMarker().getTag() == marker.getTag()) {
+                    MicroCityView microCityViewClicked = microCityViewArray.get(i);
+                    startNavigationToDestination(new LatLng(
+                            microCityViewClicked.getMarker().getPosition().latitude,
+                            microCityViewClicked.getMarker().getPosition().longitude));
+                    break;
+                }
             }
-        });
+        }
+
+        return true;
     }
 
     @Override
@@ -200,11 +211,15 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
         Log.e(TAG, "onMicroCityResolved");
+
+        //START Test purpose only
         MicroCity fakeMicroCity = new MicroCity();
         fakeMicroCity.setName("Biblio");
         fakeMicroCity.setCoordinates(new Coordinates(41.388669, 2.112615));
         microCities.add(fakeMicroCity);
-        this.microCities = microCities;
+        //END
+
+        this.microCityViewArray = new ArrayList<>();
 
         Bitmap smallMarker =
                 Bitmap.createScaledBitmap(
@@ -215,11 +230,15 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             MicroCity currentMicroCity = microCities.get(i);
             Log.e(TAG, currentMicroCity.toString());
 
-            mMap.addMarker(new MarkerOptions()
+            Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
             );
+
+            marker.setTag(i);
+
+            microCityViewArray.add(new MicroCityView(currentMicroCity, marker));
 
             View microCityView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
@@ -235,6 +254,17 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             cityTimeText.setText("1 min");
             cityKmText.setText("10 km");
 
+            microCityView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+
+                    Toast.makeText(getContext(),
+                            "Card clicked",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
             microCitiesLinearContainer.addView(microCityView);
         }
     }
@@ -245,16 +275,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        startActivityForResult(mapIntent,90);
+        startActivityForResult(mapIntent, 90);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
+        switch (requestCode) {
             case 90:
                 if (resultCode == RESULT_OK) Log.e(TAG, "Navigation ok");
                 else if (resultCode == RESULT_CANCELED) Log.e(TAG, "Navigation canceled");
 
-                double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(),this.location.getLongitude()));
+                double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
                 if (dist < 100000) {
                     Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
 

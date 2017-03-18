@@ -2,10 +2,6 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -18,9 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
-
-import org.bigiot.lib.exceptions.AccessToNonSubscribedOfferingException;
-import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -52,19 +45,6 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
 
         MicroCityController microCityController = new MicroCityController();
-        try {
-            microCityController.getMicrocities();
-        } catch (IncompleteOfferingQueryException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (AccessToNonSubscribedOfferingException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

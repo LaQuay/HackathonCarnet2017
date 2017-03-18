@@ -39,6 +39,6 @@ public class MicroCity {
     @Override
     public String toString()
     {
-        return "ClassPojo [services = "+services+", name = "+name+", coordinates = "+coordinates+"]";
+        return "MicroCity [name = " + name + ",\n services = "+services+",\n coordinates = "+coordinates+"]";
     }
 }

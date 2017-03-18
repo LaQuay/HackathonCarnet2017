@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity
             fragment = MainFragmentActivity.newInstance();
             fragmentTAG = MainFragmentActivity.TAG;
         } else if (id == R.id.nav_manage) {
-
+            fragment = VenueFragment.newInstance();
+            fragmentTAG = VenueFragment.TAG;
         }
 
         if (fragment != null) {

@@ -73,9 +73,7 @@ public class MicroCityController {
 
                 // Coordinates
                 JSONObject coordinatesJSON = microCityJSONObject.getJSONObject("coordinates");
-                Coordinates coordinates = new Coordinates();
-                coordinates.setLat(coordinatesJSON.getDouble("lat"));
-                coordinates.setLng(coordinatesJSON.getDouble("lng"));
+                Coordinates coordinates = new Coordinates(coordinatesJSON.getDouble("lat"),coordinatesJSON.getDouble("lng"));
                 microCity.setCoordinates(coordinates);
 
                 // Services

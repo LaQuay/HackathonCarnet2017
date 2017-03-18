@@ -32,12 +32,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
+import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback,
         LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback {
@@ -57,6 +61,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private MicroCityController microCityController;
     private final MicroCityController.MicroCityResolvedCallback microCityResolvedCallback = this;
     private ArrayList<MicroCity> microCities = null;
+    private LatLng endPointLatLng = null;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -179,6 +184,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
         Log.e(TAG, "onMicroCityResolved");
+        MicroCity fakeMicroCity = new MicroCity();
+        fakeMicroCity.setName("Biblio");
+        fakeMicroCity.setCoordinates(new Coordinates(41.388669, 2.112615));
+        microCities.add(fakeMicroCity);
         this.microCities = microCities;
 
         BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.icon_mc);
@@ -211,10 +220,27 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     private void startNavigationToDestination(LatLng latlng) {
+        this.endPointLatLng = latlng;
         String newPosition = latlng.latitude + "," + latlng.longitude;
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
+        startActivityForResult(mapIntent,90);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case 90:
+                if (resultCode == RESULT_OK) {
+                    Log.e(TAG, "Navigation ok");
+                    Toast.makeText(getActivity(), "Navigation ok", Toast.LENGTH_SHORT).show();
+                }
+                else if (resultCode == RESULT_CANCELED) {
+                    Log.e(TAG, "Navigation canceled");
+                    Toast.makeText(getActivity(), "Navigation canceled", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+        }
     }
 }

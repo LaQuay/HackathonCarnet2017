@@ -1,15 +1,17 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,9 +33,10 @@ import java.util.List;
 
 public class VenueFragment extends Fragment {
 
-    public static final String TAG = MainFragmentActivity.class.getSimpleName();
-
+    public final static String TAG = MainFragmentActivity.class.getSimpleName();
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
+
+    private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
 
     private List<Venue> mData;
 
@@ -51,7 +54,50 @@ public class VenueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_venue, container, false);
 
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<Integer> selectedItems = new ArrayList<>();
+                AlertDialog dialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Select The Difficulty Level")
+                        .setMultiChoiceItems(categories, null, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                                if (isChecked) {
+                                    selectedItems.add(indexSelected);
+                                } else if (selectedItems.contains(indexSelected)) {
+                                    selectedItems.remove(Integer.valueOf(indexSelected));
+                                }
+                            }
+                        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                mData = new ArrayList<>();
+                                getServices(rootView, selectedItems);
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                //  Your code when user clicked on Cancel
+                            }
+                        }).create();
+                dialog.show();
+            }
+        });
+        getServices(rootView, new ArrayList<Integer>());
+        return rootView;
+    }
+
+    private void getServices(final View rootView, List<Integer> selectedItems) {
         String url = API_BASE + "?ll=41.404588,2.191274";
+        if (!selectedItems.isEmpty()) {
+            url += "&query=";
+            for (int i = 0; i < selectedItems.size(); i++) {
+                if (i != 0) url += ",";
+                url += categories[selectedItems.get(i)];
+            }
+        }
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
@@ -68,7 +114,7 @@ public class VenueFragment extends Fragment {
                         mData.add(venue);
                     }
 
-                    RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.shopping_recycler_view);
+                    RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                     mRecyclerView.setAdapter(new VenueAdapter(mData));
 
@@ -84,8 +130,6 @@ public class VenueFragment extends Fragment {
             }
         });
         queue.add(stringRequest);
-
-        return rootView;
     }
 
     private class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> {
@@ -104,7 +148,7 @@ public class VenueFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position){
+        public void onBindViewHolder(ViewHolder holder, int position) {
             try {
                 Venue cardModel = data.get(position);
                 final String name = cardModel.getName();

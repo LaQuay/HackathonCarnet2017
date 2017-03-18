@@ -16,9 +16,15 @@ module.exports = function (app) {
                     let positionQuerry = {ll : microcity.coordinates.lat + ',' + microcity.coordinates.lng};
                     foursquare.getVenues(positionQuerry, function (err2, results) {
                         treatError(res, err2);
-                        //res.json(JSON.parse(data.toString()));
-                        //res.json(buildFilteredVenues(results.response.venues));
+
                         microcities[index].venues=buildFilteredVenues(results.response.venues);
+                        let carServices = JSON.parse(fs.readFileSync('./resources/car-services.json', 'utf8'));
+                        carServices.forEach(function(carService){
+                            /*add location to car services*/
+                            carService.location.lat=microcity.coordinates.lat;
+                            carService.location.lng=microcity.coordinates.lng;
+                            microcities[index].venues.push(carService);
+                        });
                         --calls;
                         if (calls==0) callback();
                     });

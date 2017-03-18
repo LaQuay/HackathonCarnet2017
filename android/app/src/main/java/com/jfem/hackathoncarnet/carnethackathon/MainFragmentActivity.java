@@ -18,6 +18,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
+import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 /**
  * Created by LaQuay on 18/03/2017.

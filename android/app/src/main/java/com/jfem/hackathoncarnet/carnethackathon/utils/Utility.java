@@ -1,4 +1,4 @@
-package com.jfem.hackathoncarnet.carnethackathon;
+package com.jfem.hackathoncarnet.carnethackathon.utils;
 
 import android.support.design.widget.Snackbar;
 import android.view.View;

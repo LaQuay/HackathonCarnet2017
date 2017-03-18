@@ -1,6 +1,11 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -24,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,6 +58,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Snackbar snackBar;
 
     private MicroCityController microCityController;
+    private ArrayList<MicroCity> microCities = null;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -160,6 +167,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+
+                startNavigationToDestination(new LatLng(marker.getPosition().latitude, marker.getPosition().longitude));
+                return true;
+            }
+        });
     }
 
     @Override
@@ -177,10 +194,22 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
         Log.e(TAG, "onMicroCityResolved");
+        this.microCities = microCities;
+
+        Bitmap smallMarker =
+                Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(getResources(), R.drawable.icon_mc),
+                        100, 100, false);
 
         for (int i = 0; i < microCities.size(); ++i) {
             MicroCity currentMicroCity = microCities.get(i);
             Log.e(TAG, currentMicroCity.toString());
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
+                    .title(microCities.get(i).getName())
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+            );
 
             View microCityView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
@@ -196,5 +225,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
             microCitiesLinearContainer.addView(microCityView);
         }
+    }
+
+    private void startNavigationToDestination(LatLng latlng) {
+        String newPosition = latlng.latitude + "," + latlng.longitude;
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 }

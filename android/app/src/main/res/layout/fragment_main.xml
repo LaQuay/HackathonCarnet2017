@@ -45,7 +45,7 @@
                     android:layout_marginTop="5dp"
                     android:text="Carrer default numero 123"
                     android:textSize="16sp" />
-
+                
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/fragment_main_map_google"
                     android:layout_width="match_parent"

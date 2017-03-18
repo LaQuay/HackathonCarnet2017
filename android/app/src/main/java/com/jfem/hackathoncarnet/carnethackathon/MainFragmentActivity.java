@@ -2,6 +2,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,12 +33,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
-
 
 import java.util.ArrayList;
 
@@ -49,7 +50,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
     private View rootView;
+    private LayoutInflater inflater;
     private GoogleMap mMap;
+    private LinearLayout microCitiesLinearContainer;
     private MapView mapView;
     private TextView locationText;
 
@@ -59,7 +62,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Snackbar snackBar;
 
     private MicroCityController microCityController;
-    private final MicroCityController.MicroCityResolvedCallback microCityResolvedCallback = this;
     private ArrayList<MicroCity> microCities = null;
     private LatLng endPointLatLng = null;
 
@@ -72,6 +74,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        this.inflater = inflater;
+
         baseSnackBarView = getActivity().findViewById(R.id.drawer_layout);
 
         button = (ImageButton) rootView.findViewById(R.id.search_button);
@@ -112,7 +116,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         mapView.getMapAsync(this);
 
         microCityController = new MicroCityController(getContext());
-        microCityController.imageOCRRequest(microCityResolvedCallback);
+        microCityController.imageOCRRequest(this);
 
         startLocation();
 
@@ -134,6 +138,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private void setUpElements() {
         mapView = (MapView) rootView.findViewById(R.id.fragment_main_map_google);
         locationText = (TextView) rootView.findViewById(R.id.fragment_main_your_location_text);
+        microCitiesLinearContainer = (LinearLayout) rootView.findViewById(R.id.micro_cities_container_fragment_main);
     }
 
     private void setUpListeners() {
@@ -167,6 +172,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+
+                startNavigationToDestination(new LatLng(marker.getPosition().latitude, marker.getPosition().longitude));
+                return true;
+            }
+        });
     }
 
     @Override
@@ -190,33 +205,35 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         microCities.add(fakeMicroCity);
         this.microCities = microCities;
 
-        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.icon_mc);
-        Bitmap b=bitmapdraw.getBitmap();
-        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+        Bitmap smallMarker =
+                Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(getResources(), R.drawable.icon_mc),
+                        100, 100, false);
 
         for (int i = 0; i < microCities.size(); ++i) {
-            Log.e(TAG, microCities.get(i).toString());
-
-            LatLng latLng = new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng());
+            MicroCity currentMicroCity = microCities.get(i);
+            Log.e(TAG, currentMicroCity.toString());
 
             mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
+                    .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
             );
 
-        }
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
-                //marker.showInfoWindow();
-                startNavigationToDestination(new LatLng(marker.getPosition().latitude,marker.getPosition().longitude));
-                return true;
-            }
-        });
+            View microCityView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
-        Toast.makeText(getActivity(), "MicroCities", Toast.LENGTH_SHORT).show();
+            TextView cityNameText = (TextView) microCityView.findViewById(R.id.item_microcity_name_text);
+            TextView cityAddressText = (TextView) microCityView.findViewById(R.id.item_microcity_address_text);
+            TextView cityNumberText = (TextView) microCityView.findViewById(R.id.item_microcity_number_text);
+            TextView cityTimeText = (TextView) microCityView.findViewById(R.id.item_microcity_time_text);
+            TextView cityKmText = (TextView) microCityView.findViewById(R.id.item_microcity_distance_text);
+
+            cityNameText.setText(currentMicroCity.getName());
+            cityAddressText.setText("" + currentMicroCity.getAddress());
+            cityNumberText.setText("" + (i + 1));
+
+            microCitiesLinearContainer.addView(microCityView);
+        }
     }
 
     private void startNavigationToDestination(LatLng latlng) {

@@ -7,31 +7,26 @@ public class Coordinates {
 
     public Coordinates(double lat, double lng) {this.lat = lat; this.lng = lng;}
 
-    public double getLng ()
-    {
+    public double getLng() {
         return lng;
     }
 
-    public void setLng (double lng)
-    {
+    public void setLng(double lng) {
         this.lng = lng;
     }
 
-    public double getLat ()
-    {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat (double lat)
-    {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
     public void setLatLng (double lat, double lng) {setLat(lat);setLng(lng);}
 
     @Override
-    public String toString()
-    {
-        return "[lng = "+lng+", lat = "+lat+"]";
+    public String toString() {
+        return "[lng = " + lng + ", lat = " + lat + "]";
     }
 }

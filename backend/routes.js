@@ -39,7 +39,7 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/bigiot/access/services/microcitieslist', function (req, res) {
+    app.get('/bigiot/access/microcitieslist', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
             treatError(res, err);
             res.json(JSON.parse(data.toString()));

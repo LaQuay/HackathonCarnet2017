@@ -3,6 +3,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -244,6 +245,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmapMarker))
             );
             marker.setTag(i);
+            marker.setAlpha(0.7f);
 
             microCityViewArray.add(new MicroCityView(currentMicroCity, marker));
         }

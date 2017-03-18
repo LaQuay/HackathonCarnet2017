@@ -3,7 +3,6 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -219,19 +218,17 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         this.microCityViewArray = new ArrayList<>();
 
-        Bitmap smallMarker =
-                Bitmap.createScaledBitmap(
-                        BitmapFactory.decodeResource(getResources(), R.drawable.icon_marker_microcity),
-                        100, 100, false);
-
         for (int i = 0; i < microCities.size(); ++i) {
+            Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
+            bitmapMarker = Utility.addTextToBitmap(getContext(), "" + (i + 1), bitmapMarker);
+
             MicroCity currentMicroCity = microCities.get(i);
             //Log.e(TAG, currentMicroCity.toString());
 
             final Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
-                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmapMarker))
             );
 
             marker.setTag(i);

@@ -19,7 +19,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityConsumer;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
+
+import org.bigiot.lib.exceptions.AccessToNonSubscribedOfferingException;
+import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by LaQuay on 18/03/2017.
@@ -63,6 +70,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         mapView.getMapAsync(this);
 
         startLocation();
+
+        try {
+            MicroCityConsumer.getMicrocities();
+        } catch (InterruptedException | ExecutionException | IOException | AccessToNonSubscribedOfferingException | IncompleteOfferingQueryException e) {
+            e.printStackTrace();
+        }
 
         return rootView;
     }

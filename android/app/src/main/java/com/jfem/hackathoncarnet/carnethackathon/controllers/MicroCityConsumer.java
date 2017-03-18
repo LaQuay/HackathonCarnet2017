@@ -2,60 +2,91 @@ package com.jfem.hackathoncarnet.carnethackathon.controllers;
 
 import android.util.Log;
 
+import org.bigiot.lib.ConsumerCore;
+import org.bigiot.lib.exceptions.AccessToNonActivatedOfferingException;
+import org.bigiot.lib.exceptions.AccessToNonSubscribedOfferingException;
+import org.bigiot.lib.exceptions.IllegalAccessParameterException;
+import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
+import org.bigiot.lib.handlers.AccessResponseFailureHandler;
+import org.bigiot.lib.handlers.AccessResponseSuccessHandler;
+import org.bigiot.lib.handlers.DiscoverFailureException;
+import org.bigiot.lib.handlers.DiscoverResponseErrorHandler;
+import org.bigiot.lib.handlers.DiscoverResponseHandler;
+import org.bigiot.lib.model.BigIotTypes;
+import org.bigiot.lib.model.Information;
+import org.bigiot.lib.model.Price;
+import org.bigiot.lib.model.RDFType;
+import org.bigiot.lib.offering.AccessParameters;
+import org.bigiot.lib.offering.AccessResponse;
+import org.bigiot.lib.offering.IOfferingCore;
+import org.bigiot.lib.offering.OfferingCore;
+import org.bigiot.lib.offering.SubscribableOfferingDescriptionCore;
+import org.bigiot.lib.query.IOfferingQuery;
+import org.bigiot.lib.query.OfferingQuery;
+import org.bigiot.lib.query.elements.Region;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-/*
-public class MicroCityConsumer {
-    private final String TAG = MicroCityConsumer.class.getSimpleName();
 
+public class MicroCityConsumer {
+    private static final String TAG = MicroCityConsumer.class.getSimpleName();
     private static String MARKETPLACE_URI = "http://gibo.fib.upc.edu:50002";
     private static String CONSUMER_ID = "Barcelona_City-Example_Service";
 
-    private ArrayList<MicroCity> microCities;
+    public static void getMicrocities() throws InterruptedException, ExecutionException, IOException, IncompleteOfferingQueryException, AccessToNonSubscribedOfferingException {
+        ConsumerCore consumerCore = new ConsumerCore(CONSUMER_ID, MARKETPLACE_URI);
+        consumerCore.authenticate("12345678");
 
-    public void getMicrocities() throws InterruptedException, ExecutionException, IOException, IncompleteOfferingQueryException, AccessToNonSubscribedOfferingException {
-        Consumer consumer = new Consumer(CONSUMER_ID, MARKETPLACE_URI);
-        consumer.authenticate("12345678");
-
-        OfferingQuery query = OfferingQuery.create("BikesQuery")
+        OfferingQuery offeringQuery = OfferingQuery.create("BikesQuery")
                 .withInformation(new Information("Bikes Offering", "bigiot:Bike")) // Query type matches bike sharing offering description
                 .inRegion(Region.city("Barcelona")) // In Barcelona region
                 .withAccountingType(BigIotTypes.AccountingType.PER_ACCESS)
                 .withMaxPrice(Price.Euros.amount(0.005))
                 .withLicenseType(BigIotTypes.LicenseType.OPEN_DATA_LICENSE);
 
-        // Discover offering
-        CompletableFuture<List<SubscribableOfferingDescription>> listFuture = consumer.discover(query);
-        List<SubscribableOfferingDescription> list = listFuture.get();
+        if (!offeringQuery.isValid()) {
+            Log.e(TAG, "QUERY NOT VALID");
+        }
 
-        listFuture.thenApply(SubscribableOfferingDescription::showOfferingDescriptions);
+        consumerCore.discover(offeringQuery,
+                new DiscoverResponseHandler() {
+                    @Override
+                    public void processResponse(IOfferingQuery reference, List offeringDescriptions) {
+                        Log.e(TAG, "Discovered: " + offeringDescriptions.size() + " offerings");
+                        for (int i = 0; i < offeringDescriptions.size(); ++i) {
+                            SubscribableOfferingDescriptionCore subscribableOfferingDescriptionCore = (SubscribableOfferingDescriptionCore) offeringDescriptions.get(i);
+                            Log.e(TAG, "Offering " + subscribableOfferingDescriptionCore.getName());
 
-        consumer.discover(query,(q,l)-> {
-            log("Discovery with callback");
-            SubscribableOfferingDescription.showOfferingDescriptions(list);
-        });
+                            OfferingCore concreteOffering = subscribableOfferingDescriptionCore.subscribeBlocking();
 
-        // Just select the first Offering in the list
-        SubscribableOfferingDescription selectedOfferingDescription = list.get(0);
+                            AccessParameters accessParameters = AccessParameters.create()
+                                    .addRdfTypeValue(new RDFType("schema:city"), "bcn");
 
-        // Instantiation of Offering Access objects via subscribe
-        CompletableFuture<Offering> offeringFuture = selectedOfferingDescription.subscribe();
-        Offering offering = offeringFuture.get();
-
-        // Prepare access parameters
-        AccessParameters accessParameters = AccessParameters.create()
-                .addRdfTypeValue(new RDFType("schema:city"), "bcn");
-
-        CompletableFuture<AccessResponse> response = offering.accessOneTime(accessParameters);
-
-        AccessResponse result = response.get();
-        Log.e("MCC","One-time access result = " + result.toString());
-
-        //Thread.sleep(60000);
-
-        //offering.unsubscribe();
+                            try {
+                                concreteOffering.accessOneTime(accessParameters,
+                                        new AccessResponseSuccessHandler() {
+                                            @Override
+                                            public void processResponseOnSuccess(IOfferingCore iOfferingCore, AccessResponse accessResponse) {
+                                                Log.e(TAG, "One time Offering access: " + accessResponse.asJsonNode().get("stations").size() + " elements received. ");
+                                            }
+                                        }, new AccessResponseFailureHandler() {
+                                            @Override
+                                            public void processResponseOnFailure(IOfferingCore iOfferingCore, AccessResponse accessResponse) {
+                                                Log.e(TAG, "processResponseOnFailure - failure");
+                                            }
+                                        });
+                            } catch (IllegalAccessParameterException | AccessToNonActivatedOfferingException | AccessToNonSubscribedOfferingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }, new DiscoverResponseErrorHandler() {
+                    @Override
+                    public void processResponse(IOfferingQuery iOfferingQuery, DiscoverFailureException e) {
+                        Log.e(TAG, "processResponse - failure");
+                    }
+                }
+        );
     }
 }
-*/

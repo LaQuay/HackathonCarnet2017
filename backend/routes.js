@@ -85,11 +85,11 @@ module.exports = function (app) {
 
     function treatError(res, err) {
         if (err) {
-            if (err.errorType === 'param_error') res.status(400);
-            else {
-                console.log(err);
-                res.status(500);
-            }
+            console.log(err);
+            if (err.errorType === 'param_error') res.status(400).send();
+            else if (err.errorType === 'invalid_auth') res.status(403).send();
+            else res.status(500).send();
+
         }
     }
 

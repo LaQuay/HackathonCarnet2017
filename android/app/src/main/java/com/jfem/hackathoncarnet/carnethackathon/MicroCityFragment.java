@@ -96,6 +96,7 @@ public class MicroCityFragment extends Fragment {
                     for (int i = 0; i < venuesJSON.length(); i++) {
                         JSONObject venueJSON = venuesJSON.getJSONObject(i);
                         MicroCity microCity = new MicroCity();
+                        microCity.setId(venueJSON.getInt("id"));
                         microCity.setName(venueJSON.getString("name"));
                         mData.add(microCity);
                     }
@@ -142,7 +143,7 @@ public class MicroCityFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             MicroCity cardModel = data.get(position);
             holder.mVenueName.setText(cardModel.getName());
-            holder.mMicroCityCover.setImageDrawable(drawables[cardModel.getId()]);
+            holder.mMicroCityCover.setImageDrawable(drawables[cardModel.getId() - 1]);
         }
 
         @Override

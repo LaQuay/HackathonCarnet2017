@@ -5,77 +5,7 @@
       "lat": 41.4050329,
       "lng": 2.19103419999999
     },
-    "address":"Avinguda Diagonal, 208, 08018 Barcelona",
-    "services": {
-      "mobility": [
-        {
-          "name": "bus",
-          "positioning": [
-            {
-              "name": "Diagonal - Roc Boronat",
-              "schedule": {
-                "start": "06:00",
-                "end": "23:00",
-                "frequency": "00:15"
-              },
-              "lat": 41.404588,
-              "lng": 2.191274
-            },
-            {
-              "name": "Diagonal - Ciutat de Granada",
-              "schedule": {
-                "start": "06:00",
-                "end": "23:00",
-                "frequency": "00:15"
-              },
-              "lat": 41.404211,
-              "lng": 2.191173
-            }
-          ]
-        },
-        {
-          "name": "Tram",
-          "positioning": [
-            {
-              "name": "Ca l'arenyo",
-              "schedule": {
-                "start": "06:00",
-                "end": "23:00",
-                "frequency": "00:15"
-              },
-              "lat": 41.404405,
-              "lng": 2.191549
-            }
-          ]
-        },{
-          "name": "Tram",
-          "positioning": [
-            {
-              "name": "Ca l'arenyo",
-              "schedule": {
-                "start": "06:00",
-                "end": "23:00",
-                "frequency": "00:15"
-              },
-              "lat": 41.404405,
-              "lng": 2.191549
-            },
-            {
-              "name": "La farinera",
-              "schedule": {
-                "start": "06:00",
-                "end": "23:00",
-                "frequency": "00:15"
-              },
-              "lat": 41.404140,
-              "lng": 2.188524
-            }//41.404140, 2.188524
-          ]
-        }
-      ],
-      "car": [],
-      "leisure": []
-    }
+    "address":"Avinguda Diagonal, 208, 08018 Barcelona"
   },
   {
     "name": "L'illa Diagonal",

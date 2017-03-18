@@ -17,12 +17,11 @@ public class DiscountsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_venue, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_discounts, container, false);
 
 
         return rootView;

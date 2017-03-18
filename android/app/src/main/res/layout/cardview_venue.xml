@@ -52,11 +52,10 @@
 
                 <ImageView
                     android:id="@+id/venue_maps"
-                    android:src="@drawable/ic_map_black_24dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_map_black_24dp" />
+            </LinearLayout>
 
         </LinearLayout>
 

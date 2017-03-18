@@ -186,7 +186,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         for (int i = 0; i < microCities.size(); ++i) {
             Log.e(TAG, microCities.get(i).toString());
 
-            LatLng latLng = new LatLng(microCities.get(i).getCoordinates().getLat() + 0.02, microCities.get(i).getCoordinates().getLng());
+            LatLng latLng = new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng());
 
             mMap.addMarker(new MarkerOptions()
                     .position(latLng)

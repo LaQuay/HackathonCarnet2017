@@ -10,7 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.jfem.hackathoncarnet.carnethackathon.R;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,11 +19,14 @@ import org.json.JSONObject;
 public class DistanceController {
     private static final String TAG = DistanceController.class.getSimpleName();
 
-    public static void distanceRequest(Context context, Location location1, Location location2, final MicroCityView microCityView, final DistanceController.DistanceResolvedCallback distanceResolvedCallback) {
+    public static void distanceRequest(Context context, Location baseLocation, final MicroCityMarker microCityMarker, final DistanceController.DistanceResolvedCallback distanceResolvedCallback) {
+        double markerLat = microCityMarker.getMarker().getPosition().latitude;
+        double markerLon = microCityMarker.getMarker().getPosition().longitude;
+
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s,%s&destinations=%s,%s&key=%s";
 
-        url = String.format(url, location1.getLatitude(), location1.getLongitude(),
-                location2.getLatitude(), location2.getLongitude(), context.getResources().getString(R.string.google_maps_key));
+        url = String.format(url, baseLocation.getLatitude(), baseLocation.getLongitude(),
+                markerLat, markerLon, context.getResources().getString(R.string.google_maps_key));
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -32,7 +35,7 @@ public class DistanceController {
                     @Override
                     public void onResponse(JSONObject response) {
                         DistanceInfo distanceProperties = parseDistanceJSONArray(response);
-                        distanceResolvedCallback.onDistanceResolved(distanceProperties, microCityView);
+                        distanceResolvedCallback.onDistanceResolved(distanceProperties, microCityMarker);
                     }
                 }, new Response.ErrorListener() {
 
@@ -68,6 +71,6 @@ public class DistanceController {
     }
 
     public interface DistanceResolvedCallback {
-        void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityView);
+        void onDistanceResolved(DistanceInfo distanceProperties, MicroCityMarker microCityMarker);
     }
 }

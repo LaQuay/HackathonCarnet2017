@@ -95,10 +95,12 @@ public class MainActivity extends AppCompatActivity
 
         Fragment fragment = null;
         String fragmentTAG = null;
-        if (id == R.id.nav_home) {
+        if (id == R.id.nav_around_me) {
             fragment = MainFragmentActivity.newInstance();
             fragmentTAG = MainFragmentActivity.TAG;
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_by_microcity) {
+
+        } else if (id == R.id.nav_by_filter) {
             fragment = VenueFragment.newInstance();
             fragmentTAG = VenueFragment.TAG;
         }
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.main_container, fragment, fragmentTAG);
-            if (id != R.id.nav_home) {
+            if (id != R.id.nav_around_me) {
                 ft.addToBackStack(null);
             }
             ft.commit();

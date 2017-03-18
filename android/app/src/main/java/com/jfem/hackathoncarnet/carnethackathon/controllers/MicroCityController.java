@@ -20,14 +20,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MicroCityController {
-    private final String TAG = MicroCityController.class.getSimpleName();
-    private final Context context;
+    private static final String TAG = MicroCityController.class.getSimpleName();
 
-    public MicroCityController(Context context) {
-        this.context = context;
-    }
-
-    public void microCityRequest(final MicroCityResolvedCallback microCityResolvedCallback) {
+    public static void microCityRequest(Context context, final MicroCityResolvedCallback microCityResolvedCallback) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("carnet-hack.herokuapp.com")
@@ -59,7 +54,7 @@ public class MicroCityController {
         VolleyController.getInstance(context).addToQueue(jsonArrayRequest);
     }
 
-    private ArrayList<MicroCity> parseMicroCityJSONArray(JSONArray microCityJSONArray) {
+    private static ArrayList<MicroCity> parseMicroCityJSONArray(JSONArray microCityJSONArray) {
         ArrayList<MicroCity> microCitiesArray = new ArrayList<MicroCity>();
 
         try {

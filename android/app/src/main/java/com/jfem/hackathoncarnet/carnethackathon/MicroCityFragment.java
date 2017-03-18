@@ -1,6 +1,7 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -32,7 +33,7 @@ import java.util.List;
 public class MicroCityFragment extends Fragment {
 
     public final static String TAG = MainFragmentActivity.class.getSimpleName();
-    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcitieslist";
+    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
 
@@ -72,7 +73,7 @@ public class MicroCityFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 mData = new ArrayList<>();
-                                getServices(rootView, selectedItems);
+                                getServices(rootView);
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
@@ -83,21 +84,13 @@ public class MicroCityFragment extends Fragment {
                 dialog.show();
             }
         });
-        getServices(rootView, new ArrayList<Integer>());
+        getServices(rootView);
         return rootView;
     }
 
-    private void getServices(final View rootView, List<Integer> selectedItems) {
-        String url = API_BASE + "?ll=41.404588,2.191274";
-        if (!selectedItems.isEmpty()) {
-            url += "&query=";
-            for (int i = 0; i < selectedItems.size(); i++) {
-                if (i != 0) url += ",";
-                url += categories[selectedItems.get(i)];
-            }
-        }
+    private void getServices(final View rootView) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, API_BASE, new Response.Listener<String>() {
             @Override
             public void onResponse(String venues) {
                 try {
@@ -130,6 +123,11 @@ public class MicroCityFragment extends Fragment {
     private class MicroCityAdapter extends RecyclerView.Adapter<MicroCityAdapter.ViewHolder> {
 
         private List<MicroCity> data;
+        private Drawable[] drawables = {
+                getResources().getDrawable(R.drawable.mc_1),
+                getResources().getDrawable(R.drawable.mc_2),
+                getResources().getDrawable(R.drawable.mc_3)
+        };
 
         MicroCityAdapter(List<MicroCity> data) {
             this.data = data;
@@ -146,7 +144,7 @@ public class MicroCityFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             MicroCity cardModel = data.get(position);
             holder.mVenueName.setText(cardModel.getName());
-            holder.mMicroCityCover.setImageDrawable(getResources().getDrawable(R.drawable.mc_2));
+            holder.mMicroCityCover.setImageDrawable(drawables[cardModel.getId()]);
         }
 
         @Override

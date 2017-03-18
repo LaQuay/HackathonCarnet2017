@@ -63,6 +63,9 @@ public class MicroCityController {
 
                 MicroCity microCity = new MicroCity();
 
+                // Id
+                microCity.setId(microCityJSONObject.getInt("id"));
+
                 // Name
                 microCity.setName(microCityJSONObject.getString("name"));
 

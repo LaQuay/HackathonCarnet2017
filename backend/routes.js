@@ -9,8 +9,13 @@ module.exports = function (app) {
 
     app.get('/bigiot/access/microcities', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
-            if (err) throw err;
-            let microcities =JSON.parse(data.toString());
+            treatError(res, err);
+            res.json(JSON.parse(data.toString()));
+        });
+        /*fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
+            treatError(res, err);
+            let microcities = JSON.parse(data.toString());
+
             function getVenues(callback) {
                 let calls = microcities.length;
                 microcities.forEach(function(microcity, index, microcities) {
@@ -19,32 +24,25 @@ module.exports = function (app) {
                     foursquare.getVenues(positionQuerry, function (err2, results) {
                         treatError(res, err2);
 
-                        microcities[index].venues=buildFilteredVenues(results.response.venues);
+                        microcities[index].venues = buildFilteredVenues(results.response.venues);
                         let carServices = JSON.parse(fs.readFileSync('./resources/car-services.json', 'utf8'));
-                        carServices.forEach(function(carService){
-                            /*add location to car services*/
-                            carService.location.lat=microcity.coordinates.lat;
-                            carService.location.lng=microcity.coordinates.lng;
+                        carServices.forEach(function (carService) {
+                            carService.location.lat = microcity.coordinates.lat;
+                            carService.location.lng = microcity.coordinates.lng;
                             microcities[index].venues.push(carService);
                         });
                         --calls;
-                        if (calls==0) callback();
+                        if (calls == 0) callback();
                     });
                 });
             }
-            getVenues(function(){
+
+            getVenues(function () {
                 //this will be run after getVenues is finished.
                 res.json(microcities);
                 // Rest of your code here.
             });
-        });
-    });
-
-    app.get('/bigiot/access/microcitieslist', function (req, res) {
-        fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
-            treatError(res, err);
-            res.json(JSON.parse(data.toString()));
-        });
+        });*/
     });
 
     app.get('/bigiot/access/services', function (req, res) {

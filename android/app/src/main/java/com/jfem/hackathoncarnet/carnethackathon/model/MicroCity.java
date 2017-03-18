@@ -2,10 +2,19 @@ package com.jfem.hackathoncarnet.carnethackathon.model;
 
 public class MicroCity {
 
+    private Integer id;
     private String name;
     private String address;
     private Coordinates coordinates;
     private Services services;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Services getServices() {
         return services;

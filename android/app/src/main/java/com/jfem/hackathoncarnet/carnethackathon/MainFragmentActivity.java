@@ -3,6 +3,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,8 @@ import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -62,6 +65,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private ArrayList<MicroCityMarker> microCityMarkerArray = null;
     private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
+    private int numDistanceInfoRequestLeft;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -235,6 +239,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         //END
 
         this.microCityMarkerArray = new ArrayList<>();
+        numDistanceInfoRequestLeft = microCities.size();
 
         for (int i = 0; i < microCities.size(); ++i) {
             Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
@@ -248,6 +253,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmapMarker))
             );
             marker.setTag(i);
+            marker.setAlpha(0.7f);
 
             microCityMarkerArray.add(new MicroCityMarker(currentMicroCity, marker));
         }
@@ -298,37 +304,53 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     @Override
     public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityMarker microCityMarker) {
         Log.e(TAG, "Dist: " + distanceProperties.getDistance() + " Time: " + distanceProperties.getTime());
+        --numDistanceInfoRequestLeft;
+
         microCityMarker.setDistance(distanceProperties.getDistance());
         microCityMarker.setTime(distanceProperties.getTime());
 
-        DecimalFormat df = new DecimalFormat("0.0");
-        for (int i = 0; i < microCityMarkerArray.size(); ++i) {
-            View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
-
-            TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
-            TextView cityAddressText = (TextView) mcView.findViewById(R.id.item_microcity_address_text);
-            TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
-            TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
-            TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
-
-            cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
-            cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
-            cityNumberText.setText("" + (i + 1));
-            cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
-            cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
-
-            mcView.setOnClickListener(new View.OnClickListener() {
+        if (this.numDistanceInfoRequestLeft == 0) {
+            Collections.sort(microCityMarkerArray, new Comparator<MicroCityMarker>() {
                 @Override
-                public void onClick(View v) {
-                    //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
-
-                    Toast.makeText(getContext(),
-                            "Card clicked",
-                            Toast.LENGTH_LONG).show();
+                public int compare(MicroCityMarker mcv1, MicroCityMarker mcv2) {
+                    if (mcv1.getTime() > mcv2.getTime()) return 1;
+                    else if (mcv1.getTime() < mcv2.getTime()) return -1;
+                    else {
+                        if (mcv1.getDistance() > mcv2.getDistance()) return 1;
+                        else return -1;
+                    }
                 }
             });
 
-            microCitiesLinearContainer.addView(mcView);
+            DecimalFormat df = new DecimalFormat("0.0");
+            for (int i = 0; i < microCityMarkerArray.size(); ++i) {
+                View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
+
+                TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
+                TextView cityAddressText = (TextView) mcView.findViewById(R.id.item_microcity_address_text);
+                TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
+                TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
+                TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
+
+                cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
+                cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
+                cityNumberText.setText("" + (i + 1));
+                cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
+                cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
+
+                mcView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+
+                        Toast.makeText(getContext(),
+                                "Card clicked",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                microCitiesLinearContainer.addView(mcView);
+            }
         }
     }
 }

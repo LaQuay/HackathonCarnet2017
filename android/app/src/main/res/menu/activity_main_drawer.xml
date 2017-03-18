@@ -3,14 +3,19 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Home" />
+            android:id="@+id/nav_around_me"
+            android:icon="@drawable/ic_map_marker_radius_grey600_24dp"
+            android:title="Around Me" />
 
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_by_microcity"
+            android:icon="@drawable/ic_home_modern_grey600_24dp"
+            android:title="Search MicroCity" />
+
+        <item
+            android:id="@+id/nav_by_filter"
+            android:icon="@drawable/ic_filter_grey600_24dp"
+            android:title="Search Services" />
     </group>
 
 </menu>

@@ -282,8 +282,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
                 double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
                 if (dist < 100000) {
-                    Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
-
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);
@@ -338,14 +336,31 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
                 cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
 
+                final int mcid = i;
                 mcView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+                        focusOnMarker(microCityMarkerArray.get(mcid).getMarker());
+                    }
+                });
+                mcView.setOnLongClickListener(new View.OnLongClickListener() {
 
-                        Toast.makeText(getContext(),
-                                "Card clicked",
-                                Toast.LENGTH_LONG).show();
+                    @Override
+                    public boolean onLongClick(View view) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
+                        builder.setTitle("Navigate to this MicroCity?");
+                        builder.setCancelable(true);
+                        builder.setMessage("Do you want to navigate to this MicroCity?");
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                startNavigationToDestination(new LatLng(
+                                        microCityMarkerArray.get(mcid).getMarker().getPosition().latitude,
+                                        microCityMarkerArray.get(mcid).getMarker().getPosition().longitude));
+                            }
+                        });
+                        builder.setNegativeButton("No", null);
+                        builder.show();
+                        return false;
                     }
                 });
 

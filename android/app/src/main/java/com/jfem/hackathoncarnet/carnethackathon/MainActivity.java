@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity
             fragment = MainFragmentActivity.newInstance();
             fragmentTAG = MainFragmentActivity.TAG;
         } else if (id == R.id.nav_by_microcity) {
-
+            fragment = MicroCityFragment.newInstance();
+            fragmentTAG = MicroCityFragment.TAG;
         } else if (id == R.id.nav_by_filter) {
             fragment = VenueFragment.newInstance();
             fragmentTAG = VenueFragment.TAG;

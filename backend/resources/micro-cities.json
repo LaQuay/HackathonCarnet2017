@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "name": "Centre Comercial Glòries",
     "coordinates": {
       "lat": 41.4050329,
@@ -8,6 +9,7 @@
     "address":"Avinguda Diagonal, 208, 08018 Barcelona"
   },
   {
+    "id": 2,
     "name": "L'illa Diagonal",
     "coordinates": {
       "lat": 41.3896623,
@@ -16,6 +18,7 @@
     "address":"Avinguda Diagonal, 557, 08029 Barcelona"
   },
   {
+    "id": 3,
     "name": "Gran Via 2 A",
     "coordinates": {
       "lat": 41.359381,

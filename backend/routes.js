@@ -4,6 +4,7 @@ module.exports = function (app) {
 
     const foursquare = (require('foursquarevenues'))(process.env.FS_KEY, process.env.FS_SKEY);
     const fs = require('fs');
+
     /*---- Routes ----*/
 
     app.get('/bigiot/access/microcities', function (req, res) {
@@ -35,6 +36,13 @@ module.exports = function (app) {
                 res.json(microcities);
                 // Rest of your code here.
             });
+        });
+    });
+
+    app.get('/bigiot/access/services/microcitieslist', function (req, res) {
+        fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
+            treatError(res, err);
+            res.json(JSON.parse(data.toString()));
         });
     });
 

@@ -4,6 +4,10 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +20,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
+
+import org.bigiot.lib.exceptions.AccessToNonSubscribedOfferingException;
+import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,6 +57,21 @@ public class MainActivity extends AppCompatActivity
         boolean locationServiceAvailable = LocationController.getInstance(getApplicationContext()).checkLocationServiceAvailable();
         if (!locationServiceAvailable) {
             requestLocationPermissions();
+        }
+
+        MicroCityController microCityController = new MicroCityController();
+        try {
+            microCityController.getMicrocities();
+        } catch (IncompleteOfferingQueryException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AccessToNonSubscribedOfferingException e) {
+            e.printStackTrace();
         }
     }
 

@@ -3,7 +3,6 @@
 const express = require('express');
 const fs = require('fs');
 
-const PORT = 3000;
 const app = express();
 
 /*---- Routes ----*/
@@ -21,6 +20,6 @@ app.get('/microCities', function (req, res) {
 
 /*---- Server ----*/
 
-app.listen(PORT, function () {
-    console.log("Server listening at port %s", PORT);
+app.listen(process.env.PORT || 3000, function () {
+    console.log('Server listening at port %s', process.env.PORT || 3000);
 });

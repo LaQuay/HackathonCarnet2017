@@ -14,17 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -58,8 +51,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private MapView mapView;
     private TextView locationText;
 
-    private ImageButton button;
-
     private Location location;
     private Snackbar snackBar;
 
@@ -81,8 +72,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         baseSnackBarView = getActivity().findViewById(R.id.drawer_layout);
 
-        button = (ImageButton) rootView.findViewById(R.id.search_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        /*button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RequestQueue queue = Volley.newRequestQueue(getActivity());
@@ -102,7 +92,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 });
                 queue.add(stringRequest);
             }
-        });
+        });*/
 
         setUpElements();
         setUpListeners();
@@ -155,8 +145,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     private void addMarkerUserLocation(LatLng latLng) {
-        LatLng modLatLng = new LatLng(latLng.latitude + 0.02, latLng.longitude);
-        animateCamera(modLatLng);
+        animateCamera(latLng, 0.02d);
 
         markerUserLocation = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
@@ -165,8 +154,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         markerUserLocation.showInfoWindow();
     }
 
-    private void animateCamera(LatLng latLng) {
+    private void animateCamera(LatLng latLng, Double offsetLatitude) {
+        if (offsetLatitude != null) {
+            latLng = new LatLng(latLng.latitude + offsetLatitude, latLng.longitude);
+        }
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+    }
+
+    private void focusOnMarker(Marker marker) {
+        marker.showInfoWindow();
+        animateCamera(marker.getPosition(), 0.02);
     }
 
     @Override
@@ -231,7 +228,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             MicroCity currentMicroCity = microCities.get(i);
             //Log.e(TAG, currentMicroCity.toString());
 
-            Marker marker = mMap.addMarker(new MarkerOptions()
+            final Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
@@ -258,11 +255,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             microCityView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
-
-                    Toast.makeText(getContext(),
-                            "Card clicked",
-                            Toast.LENGTH_LONG).show();
+                    focusOnMarker(marker);
                 }
             });
 

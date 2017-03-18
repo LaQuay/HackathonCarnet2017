@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -191,9 +192,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             for (int i = 0; i < microCityViewArray.size(); ++i) {
                 if (microCityViewArray.get(i).getMarker().getTag() == marker.getTag()) {
                     MicroCityView microCityViewClicked = microCityViewArray.get(i);
-                    startNavigationToDestination(new LatLng(
-                            microCityViewClicked.getMarker().getPosition().latitude,
-                            microCityViewClicked.getMarker().getPosition().longitude));
                     break;
                 }
             }
@@ -320,6 +318,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
                 TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
                 TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
+                Button cityServicesButton = (Button) mcView.findViewById(R.id.item_microcity_services_button);
 
                 cityNameText.setText(microCityViewArray.get(i).getMicroCity().getName());
                 cityAddressText.setText(microCityViewArray.get(i).getMicroCity().getAddress());
@@ -347,7 +346,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                         builder.setTitle("Navigate to this MicroCity?");
                         builder.setCancelable(true);
-                        builder.setMessage("Do you want to navigate to this MicroCity?");
+                        builder.setMessage("Do you want to navigate to the MicroCity " +
+                                microCityViewArray.get(mcid).getMicroCity().getName() + "?");
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 startNavigationToDestination(new LatLng(
@@ -358,6 +358,24 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         builder.setNegativeButton("No", null);
                         builder.show();
                         return false;
+                    }
+                });
+                cityServicesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+                        Log.e(TAG, microCityViewArray.get(mcid).getMicroCity().getServices() + "");
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
+                        builder.setTitle("Services in " + microCityViewArray.get(mcid).getMicroCity().getName());
+                        builder.setCancelable(true);
+
+                        String servicesStr = "No available services";
+                        if (microCityViewArray.get(mcid).getMicroCity().getServices() != null)
+                            servicesStr = microCityViewArray.get(mcid).getMicroCity().getServices().toString();
+                        builder.setMessage(servicesStr);
+                        builder.show();
+
                     }
                 });
 

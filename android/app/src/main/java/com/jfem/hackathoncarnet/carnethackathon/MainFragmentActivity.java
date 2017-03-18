@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -32,7 +33,7 @@ import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import java.text.DecimalFormat;
@@ -58,12 +59,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Snackbar snackBar;
 
     private MicroCityController microCityController;
-    private ArrayList<MicroCityView> microCityViewArray = null;
+    private ArrayList<MicroCityMarker> microCityMarkerArray = null;
     private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
-
-    private boolean locationIsInitialized = false;
-    private int numDistanceInfoRequestLeft = 0;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -115,9 +113,23 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         mapView.getMapAsync(this);
 
-        microCityController = new MicroCityController(getContext());
-
+        //Getting location of user
         startLocation();
+
+        //Getting all micro cities available
+        MicroCityController.microCityRequest(getContext(), this);
+
+        final Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                if (location != null && microCityMarkerArray != null && !microCityMarkerArray.isEmpty()) {
+                    requestDistanceMicroCity();
+                } else {
+                    handler.postDelayed(this, 100);
+                }
+            }
+        };
+        handler.postDelayed(r, 250);
 
         /*try {
             MicroCityConsumerBigIot.getMicrocities();
@@ -184,13 +196,14 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if (marker != markerUserLocation && microCityViewArray != null) {
-            for (int i = 0; i < microCityViewArray.size(); ++i) {
-                if (microCityViewArray.get(i).getMarker().getTag() == marker.getTag()) {
-                    MicroCityView microCityViewClicked = microCityViewArray.get(i);
+        if (marker != markerUserLocation && microCityMarkerArray != null) {
+            for (int i = 0; i < microCityMarkerArray.size(); ++i) {
+                if (microCityMarkerArray.get(i).getMarker().getTag() == marker.getTag()) {
+                    //TODO Open dialog with info instead of going
+                    MicroCityMarker microCityMarkerClicked = microCityMarkerArray.get(i);
                     startNavigationToDestination(new LatLng(
-                            microCityViewClicked.getMarker().getPosition().latitude,
-                            microCityViewClicked.getMarker().getPosition().longitude));
+                            microCityMarkerClicked.getMarker().getPosition().latitude,
+                            microCityMarkerClicked.getMarker().getPosition().longitude));
                     break;
                 }
             }
@@ -202,18 +215,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         Log.e(TAG, "New Location received" + location.getLatitude() + ", " + location.getLongitude());
+        if (this.location == null) {
+            Utility.closeSnackBar(snackBar);
+        }
         this.location = location;
 
         setLocationReceived(location);
-        if (!locationIsInitialized) {
-            microCityController.microCityRequest(this);
-            locationIsInitialized = true;
-        }
-
-        if (snackBar != null) {
-            Utility.closeSnackBar(snackBar);
-            snackBar = null;
-        }
     }
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
@@ -227,8 +234,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         microCities.add(fakeMicroCity);
         //END
 
-        numDistanceInfoRequestLeft = microCities.size();
-        this.microCityViewArray = new ArrayList<>();
+        this.microCityMarkerArray = new ArrayList<>();
 
         for (int i = 0; i < microCities.size(); ++i) {
             Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
@@ -243,14 +249,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             );
             marker.setTag(i);
 
-            microCityViewArray.add(new MicroCityView(currentMicroCity, marker));
+            microCityMarkerArray.add(new MicroCityMarker(currentMicroCity, marker));
         }
+    }
 
-        for (int i = 0; i < microCities.size(); ++i) {
-            Location loc = new Location("pp");
-            loc.setLatitude(microCities.get(i).getCoordinates().getLat());
-            loc.setLongitude(microCities.get(i).getCoordinates().getLng());
-            DistanceController.distanceRequest(getContext(), this.location, loc, this.microCityViewArray.get(i), this);
+    private void requestDistanceMicroCity() {
+        for (int i = 0; i < microCityMarkerArray.size(); ++i) {
+            DistanceController.distanceRequest(getContext(), this.location, this.microCityMarkerArray.get(i), this);
         }
     }
 
@@ -291,42 +296,39 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     @Override
-    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityView) {
+    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityMarker microCityMarker) {
         Log.e(TAG, "Dist: " + distanceProperties.getDistance() + " Time: " + distanceProperties.getTime());
-        microCityView.setDistance(distanceProperties.getDistance());
-        microCityView.setTime(distanceProperties.getTime());
-        --numDistanceInfoRequestLeft;
+        microCityMarker.setDistance(distanceProperties.getDistance());
+        microCityMarker.setTime(distanceProperties.getTime());
 
-        if (this.numDistanceInfoRequestLeft == 0) {
-            DecimalFormat df = new DecimalFormat("0.0");
-            for (int i = 0; i < microCityViewArray.size(); ++i) {
-                View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
+        DecimalFormat df = new DecimalFormat("0.0");
+        for (int i = 0; i < microCityMarkerArray.size(); ++i) {
+            View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
-                TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
-                TextView cityAddressText = (TextView) mcView.findViewById(R.id.item_microcity_address_text);
-                TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
-                TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
-                TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
+            TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
+            TextView cityAddressText = (TextView) mcView.findViewById(R.id.item_microcity_address_text);
+            TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
+            TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
+            TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
 
-                cityNameText.setText(microCityViewArray.get(i).getMicroCity().getName());
-                cityAddressText.setText(microCityViewArray.get(i).getMicroCity().getAddress());
-                cityNumberText.setText("" + (i + 1));
-                cityTimeText.setText(df.format(microCityViewArray.get(i).getTime()) + " min");
-                cityKmText.setText(df.format(microCityViewArray.get(i).getDistance()) + " km");
+            cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
+            cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
+            cityNumberText.setText("" + (i + 1));
+            cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
+            cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
 
-                mcView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
+            mcView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
 
-                        Toast.makeText(getContext(),
-                                "Card clicked",
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
+                    Toast.makeText(getContext(),
+                            "Card clicked",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
 
-                microCitiesLinearContainer.addView(mcView);
-            }
+            microCitiesLinearContainer.addView(mcView);
         }
     }
 }

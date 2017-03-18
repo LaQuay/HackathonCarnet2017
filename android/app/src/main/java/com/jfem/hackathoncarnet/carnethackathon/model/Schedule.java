@@ -1,44 +1,36 @@
 package com.jfem.hackathoncarnet.carnethackathon.model;
 
 public class Schedule {
-
     private String start;
     private String frequency;
     private String end;
 
-    public String getStart ()
-    {
+    public String getStart() {
         return start;
     }
 
-    public void setStart (String start)
-    {
+    public void setStart(String start) {
         this.start = start;
     }
 
-    public String getFrequency ()
-    {
+    public String getFrequency() {
         return frequency;
     }
 
-    public void setFrequency (String frequency)
-    {
+    public void setFrequency(String frequency) {
         this.frequency = frequency;
     }
 
-    public String getEnd ()
-    {
+    public String getEnd() {
         return end;
     }
 
-    public void setEnd (String end)
-    {
+    public void setEnd(String end) {
         this.end = end;
     }
 
     @Override
-    public String toString()
-    {
-        return "[start = "+start+", frequency = "+frequency+", end = "+end+"]";
+    public String toString() {
+        return "[start = " + start + ", frequency = " + frequency + ", end = " + end + "]";
     }
 }

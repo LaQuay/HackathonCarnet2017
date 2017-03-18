@@ -8,8 +8,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -28,9 +36,6 @@ import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by LaQuay on 18/03/2017.
- */
 
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, LocationController.OnLocationChangedListener {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
@@ -40,6 +45,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private GoogleMap mMap;
     private MapView mapView;
     private TextView locationText;
+
+    private ImageButton button;
 
     private Location location;
     private Snackbar snackBar;
@@ -54,6 +61,29 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         baseSnackBarView = getActivity().findViewById(R.id.drawer_layout);
+
+        button = (ImageButton) rootView.findViewById(R.id.search_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RequestQueue queue = Volley.newRequestQueue(getActivity());
+                String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s,%s&destinations=%s,%s&key=%s";
+                url = String.format(url, location.getLatitude(), location.getLongitude(),
+                        "41.4050329", "2.1910341999999", getResources().getString(R.string.google_maps_key));
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+                queue.add(stringRequest);
+            }
+        });
 
         setUpElements();
         setUpListeners();
@@ -78,6 +108,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
 
         return rootView;
+
     }
 
     private void startLocation() {

@@ -21,6 +21,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityConsumer;
+import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
+
+import org.bigiot.lib.exceptions.AccessToNonSubscribedOfferingException;
+import org.bigiot.lib.exceptions.IncompleteOfferingQueryException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import java.util.ArrayList;
 
@@ -69,6 +78,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         microCityController.imageOCRRequest(microCityResolvedCallback);
 
         startLocation();
+
+        try {
+            MicroCityConsumer.getMicrocities();
+        } catch (InterruptedException | ExecutionException | IOException | AccessToNonSubscribedOfferingException | IncompleteOfferingQueryException e) {
+            e.printStackTrace();
+        }
 
         return rootView;
     }

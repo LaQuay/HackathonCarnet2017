@@ -17,10 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

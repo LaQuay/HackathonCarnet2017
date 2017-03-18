@@ -1,4 +1,4 @@
-package com.jfem.hackathoncarnet.carnethackathon;
+package com.jfem.hackathoncarnet.carnethackathon.controllers;
 
 import android.Manifest;
 import android.content.Context;

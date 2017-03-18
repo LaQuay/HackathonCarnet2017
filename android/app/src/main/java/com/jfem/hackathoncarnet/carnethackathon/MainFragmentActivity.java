@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -248,16 +250,25 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode) {
             case 90:
-                if (resultCode == RESULT_OK) {
-                    Log.e(TAG, "Navigation ok");
-                    //Toast.makeText(getActivity(), "Navigation ok", Toast.LENGTH_SHORT).show();
-                }
-                else if (resultCode == RESULT_CANCELED) {
-                    Log.e(TAG, "Navigation canceled");
-                    //Toast.makeText(getActivity(), "Navigation canceled", Toast.LENGTH_SHORT).show();
-                }
+                if (resultCode == RESULT_OK) Log.e(TAG, "Navigation ok");
+                else if (resultCode == RESULT_CANCELED) Log.e(TAG, "Navigation canceled");
+
                 double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(),this.location.getLongitude()));
-                if (dist < 100000) Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
+                if (dist < 100000) {
+                    Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Arrived at destination");
+                    builder.setCancelable(true);
+                    builder.setMessage("Do you want to see the services available?");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", null);
+                    builder.show();
+                }
 
                 break;
         }

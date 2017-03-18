@@ -214,8 +214,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         //START Test purpose only
         MicroCity fakeMicroCity = new MicroCity();
-        fakeMicroCity.setName("Biblio");
-        fakeMicroCity.setCoordinates(new Coordinates(41.388669, 2.112615));
+        fakeMicroCity.setName("Biblioteca Rector Gabriel Ferraté");
+        fakeMicroCity.setAddress("Carrer Jordi Girona, 1-3, 08034 Barcelona");
+        fakeMicroCity.setCoordinates(new Coordinates(41.387614, 2.112405));
         microCities.add(fakeMicroCity);
         //END
 
@@ -228,7 +229,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         for (int i = 0; i < microCities.size(); ++i) {
             MicroCity currentMicroCity = microCities.get(i);
-            Log.e(TAG, currentMicroCity.toString());
+            //Log.e(TAG, currentMicroCity.toString());
 
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
@@ -288,10 +289,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 if (dist < 100000) {
                     Toast.makeText(getActivity(), "You have arrived at your destination!!", Toast.LENGTH_SHORT).show();
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);
-                    builder.setMessage("Do you want to see the services available?");
+                    builder.setMessage("Do you want to see the available services?");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();

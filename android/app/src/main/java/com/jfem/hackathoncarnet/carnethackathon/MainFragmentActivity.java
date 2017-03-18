@@ -1,5 +1,7 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,6 +54,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     private MicroCityController microCityController;
     private final MicroCityController.MicroCityResolvedCallback microCityResolvedCallback = this;
+    private ArrayList<MicroCity> microCities = null;
 
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
@@ -173,10 +177,32 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
         Log.e(TAG, "onMicroCityResolved");
+        this.microCities = microCities;
+
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.icon_mc);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
 
         for (int i = 0; i < microCities.size(); ++i) {
             Log.e(TAG, microCities.get(i).toString());
+
+            LatLng latLng = new LatLng(microCities.get(i).getCoordinates().getLat() + 0.02, microCities.get(i).getCoordinates().getLng());
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(microCities.get(i).getName())
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+            );
+
         }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+                marker.showInfoWindow();
+                return true;
+            }
+        });
 
         Toast.makeText(getActivity(), "MicroCities", Toast.LENGTH_SHORT).show();
     }

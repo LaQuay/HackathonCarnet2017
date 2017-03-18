@@ -14,7 +14,8 @@ module.exports = function (app) {
             function getVenues(callback) {
                 let calls = microcities.length;
                 microcities.forEach(function(microcity, index, microcities) {
-                    let positionQuerry = {ll : microcity.coordinates.lat + ',' + microcity.coordinates.lng};
+                    req.query.ll = microcity.coordinates.lat + ',' + microcity.coordinates.lng
+                    let positionQuerry = req.query;
                     foursquare.getVenues(positionQuerry, function (err2, results) {
                         treatError(res, err2);
 

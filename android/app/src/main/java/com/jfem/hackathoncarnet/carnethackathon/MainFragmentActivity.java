@@ -1,8 +1,10 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -199,11 +201,20 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Toast.makeText(getActivity(), marker.getTitle(), Toast.LENGTH_SHORT).show();
-                marker.showInfoWindow();
+                //marker.showInfoWindow();
+                startNavigationToDestination(new LatLng(marker.getPosition().latitude,marker.getPosition().longitude));
                 return true;
             }
         });
 
         Toast.makeText(getActivity(), "MicroCities", Toast.LENGTH_SHORT).show();
+    }
+
+    private void startNavigationToDestination(LatLng latlng) {
+        String newPosition = latlng.latitude + "," + latlng.longitude;
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 }

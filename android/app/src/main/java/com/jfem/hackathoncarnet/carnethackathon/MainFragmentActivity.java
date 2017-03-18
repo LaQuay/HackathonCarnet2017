@@ -329,6 +329,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityTimeText.setText(df.format(microCityViewArray.get(i).getTime()) + " min");
                 cityKmText.setText(df.format(microCityViewArray.get(i).getDistance()) + " km");
 
+                final int mcid = i;
                 mcView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -337,6 +338,15 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         Toast.makeText(getContext(),
                                 "Card clicked",
                                 Toast.LENGTH_LONG).show();
+
+                        focusOnMarker(microCityViewArray.get(mcid).getMarker());
+                    }
+                });
+                mcView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                    @Override
+                    public boolean onLongClick(View view) {
+                        return false;
                     }
                 });
 

@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +36,7 @@ public class MicroCityFragment extends Fragment {
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
-    private List<MicroCity> mData;
+    private List<MicroCityView> mData;
 
     public static MicroCityFragment newInstance() {
         return new MicroCityFragment();
@@ -98,12 +99,17 @@ public class MicroCityFragment extends Fragment {
                         MicroCity microCity = new MicroCity();
                         microCity.setId(venueJSON.getInt("id"));
                         microCity.setName(venueJSON.getString("name"));
-                        mData.add(microCity);
+                        microCity.setAddress(venueJSON.getString("address"));
+
+                        MicroCityView microCityView = new MicroCityView(microCity, null);
+                        microCityView.setDistance(1d);
+                        microCityView.setTime(1d);
+                        mData.add(microCityView);
                     }
 
                     RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    mRecyclerView.setAdapter(new MicroCityAdapter(mData));
+                    mRecyclerView.setAdapter(new MicroCityViewAdapter(mData));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -119,31 +125,36 @@ public class MicroCityFragment extends Fragment {
         queue.add(stringRequest);
     }
 
-    private class MicroCityAdapter extends RecyclerView.Adapter<MicroCityAdapter.ViewHolder> {
+    private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {
 
-        private List<MicroCity> data;
+        private List<MicroCityView> data;
         private Drawable[] drawables = {
                 getResources().getDrawable(R.drawable.mc_1),
                 getResources().getDrawable(R.drawable.mc_2),
                 getResources().getDrawable(R.drawable.mc_3)
         };
 
-        MicroCityAdapter(List<MicroCity> data) {
+        MicroCityViewAdapter(List<MicroCityView> data) {
             this.data = data;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.cardview_microcity, parent, false);
+                    .inflate(R.layout.item_microcity_microcity_fragment, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            MicroCity cardModel = data.get(position);
-            holder.mVenueName.setText(cardModel.getName());
-            holder.mMicroCityCover.setImageDrawable(drawables[cardModel.getId() - 1]);
+            MicroCityView microCityView = data.get(position);
+            MicroCity microCity = microCityView.getMicroCity();
+
+            holder.mMicroCityViewCover.setImageDrawable(drawables[microCity.getId() - 1]);
+            holder.mMicroCityViewName.setText(microCity.getName());
+            holder.mMicroCityViewAddress.setText(microCity.getAddress());
+            holder.mMicroCityViewDistance.setText(microCityView.getDistance() + " km");
+            holder.mMicroCityViewTime.setText(microCityView.getTime() + " m");
         }
 
         @Override
@@ -152,17 +163,20 @@ public class MicroCityFragment extends Fragment {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            private TextView mVenueName;
-            private ImageView mMicroCityCover;
+            private ImageView mMicroCityViewCover;
+            private TextView mMicroCityViewName;
+            private TextView mMicroCityViewAddress;
+            private TextView mMicroCityViewDistance;
+            private TextView mMicroCityViewTime;
 
             ViewHolder(View itemView) {
                 super(itemView);
-                mVenueName = (TextView) itemView.findViewById(R.id.microcity_name);
-                mMicroCityCover = (ImageView) itemView.findViewById(R.id.microcity_cover);
+                mMicroCityViewCover = (ImageView) itemView.findViewById(R.id.fragment_microcity_cover_image);
+                mMicroCityViewName = (TextView) itemView.findViewById(R.id.fragment_microcity_name_text);
+                mMicroCityViewAddress = (TextView) itemView.findViewById(R.id.fragment_microcity_address_text);
+                mMicroCityViewDistance = (TextView) itemView.findViewById(R.id.fragment_microcity_distance_text);
+                mMicroCityViewTime = (TextView) itemView.findViewById(R.id.fragment_microcity_time_text);
             }
-
         }
-
     }
-
 }

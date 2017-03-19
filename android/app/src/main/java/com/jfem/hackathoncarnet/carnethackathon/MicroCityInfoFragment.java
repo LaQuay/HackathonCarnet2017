@@ -151,6 +151,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
             venue.setCategories(serviceArray.get(i).getCategories());
             mData.add(venue);
         }
+
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_mc_info_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(new VenueAdapter(mData, getContext(), new VenueAdapter.OnItemClickListener() {
@@ -191,6 +192,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     }
 
     private void addServicesMarkers(ArrayList<Service> services) {
+        mMap.clear();
         try {
             servicesMarkers = new ArrayList<>();
             for (int i = 0; i < services.size(); ++i) {
@@ -216,10 +218,12 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         for (Marker marker : servicesMarkers) {
             builder.include(marker.getPosition());
         }
-        LatLngBounds bounds = builder.build();
-        int padding = 0; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        mMap.animateCamera(cu);
+        if (servicesMarkers.size() > 0) {
+            LatLngBounds bounds = builder.build();
+            int padding = 0; // offset from edges of the map in pixels
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+            mMap.animateCamera(cu);
+        }
     }
 
     private void focusOnMarker(Marker marker) {

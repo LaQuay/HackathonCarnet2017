@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.jfem.hackathoncarnet.carnethackathon.adapters.VenueAdapter;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
@@ -141,7 +142,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         }
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_mc_info_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter(new VenueViewAdapter(mData));
+        mRecyclerView.setAdapter(new VenueAdapter(mData, getContext()));
     }
 
     @Override
@@ -150,65 +151,5 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
 
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
-    }
-
-    private class VenueViewAdapter extends RecyclerView.Adapter<VenueViewAdapter.ViewHolder> {
-
-        private List<Venue> data;
-
-        VenueViewAdapter(List<Venue> data) {
-            this.data = data;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_microcity_venue_fragment, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            try {
-                Venue cardModel = data.get(position);
-                final String name = cardModel.getName();
-                final String address = cardModel.getLocation().getString("address");
-                final String distance = cardModel.getLocation().getString("distance") + "m";
-                final String coordinates = cardModel.getLocation().getString("lat") + "," + cardModel.getLocation().getString("lng");
-
-                holder.mVenueName.setText(name);
-                holder.mVenueAddress.setText(address);
-                holder.mVenueDistance.setText(distance);
-                holder.mVenueMaps.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Uri gmmIntentUri = Uri.parse("geo:" + coordinates);
-                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                        mapIntent.setPackage("com.google.android.apps.maps");
-                        startActivity(mapIntent);
-                    }
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            private TextView mVenueName, mVenueAddress, mVenueDistance;
-            private ImageView mVenueMaps;
-
-            ViewHolder(View itemView) {
-                super(itemView);
-                mVenueName = (TextView) itemView.findViewById(R.id.venue_name);
-                mVenueAddress = (TextView) itemView.findViewById(R.id.venue_address);
-                mVenueDistance = (TextView) itemView.findViewById(R.id.venue_distance);
-                mVenueMaps = (ImageView) itemView.findViewById(R.id.venue_maps);
-            }
-        }
     }
 }

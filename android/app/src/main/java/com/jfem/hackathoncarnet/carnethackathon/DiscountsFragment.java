@@ -3,11 +3,19 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class DiscountsFragment extends Fragment {
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.DiscountController;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
+import com.jfem.hackathoncarnet.carnethackathon.model.Discount;
+
+import java.util.ArrayList;
+
+public class DiscountsFragment extends Fragment implements DiscountController.DiscountResolvedCallback {
     public final static String TAG = DiscountsFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = " ";
@@ -38,5 +46,10 @@ public class DiscountsFragment extends Fragment {
         super.onAttach(context);
 
         ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
+    @Override
+    public void onDiscountResolved(ArrayList<Discount> discountArray) {
+        Log.e("debug","he llegado");
     }
 }

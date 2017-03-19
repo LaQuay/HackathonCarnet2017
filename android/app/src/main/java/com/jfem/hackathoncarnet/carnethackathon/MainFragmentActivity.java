@@ -10,11 +10,13 @@ import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,8 @@ import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
+
+import org.json.JSONArray;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -288,7 +292,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
                 TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
                 TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
-                Button cityServicesButton = (Button) mcView.findViewById(R.id.item_microcity_services_button);
+                ImageButton cityServicesButton = (ImageButton) mcView.findViewById(R.id.item_microcity_services_button);
 
                 cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
                 cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
@@ -352,11 +356,28 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     @Override
     public void onServiceResolved(ArrayList<Service> serviceArray, AlertDialog.Builder builder) {
         String mss = "";
+        mss += "<b>Restaurants</b><br>";
         for (int i = 0; i < serviceArray.size(); ++i) {
             //Log.e(TAG, serviceArray.get(i).getName());
-            mss += serviceArray.get(i).getName() + "\n";
+            JSONArray cat = serviceArray.get(i).getCategories();
+            if (cat.length() > 0) {
+                if (cat.toString().contains("Restaurant"))
+                    mss += serviceArray.get(i).getName() + "<br>";
+            }
         }
-        builder.setMessage(mss);
+        mss += "<br>";
+        mss += "<b>Shops</b><br>";
+        for (int i = 0; i < serviceArray.size(); ++i) {
+            //Log.e(TAG, serviceArray.get(i).getName());
+            JSONArray cat = serviceArray.get(i).getCategories();
+            if (cat.length() > 0) {
+                if ((cat.toString().contains("Shop") || cat.toString().contains("Store")) &&
+                        !cat.toString().contains("Shopping Mall")) {
+                    mss += serviceArray.get(i).getName() + "<br>";
+                }
+            }
+        }
+        builder.setMessage(Html.fromHtml(mss));
         builder.show();
     }
 }

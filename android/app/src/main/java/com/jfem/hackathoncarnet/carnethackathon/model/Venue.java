@@ -11,6 +11,7 @@ public class Venue {
     private String name;
     private JSONObject location;
     private JSONArray categories;
+    private String url;
 
     public String getId() {
         return id;
@@ -42,5 +43,13 @@ public class Venue {
 
     public void setCategories(JSONArray categories) {
         this.categories = categories;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

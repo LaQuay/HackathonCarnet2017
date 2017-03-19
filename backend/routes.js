@@ -17,22 +17,22 @@ module.exports = function (app) {
             }
         });
     });
-    
-     app.get('/bigiot/access/promotions', function (req, res) {
-         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
-             const status = treatError(err);
-             if (status === 200) {
-                 let query = null;
-                 if(req.query.query!=null) query=req.query.query;
-                 //console.log(query);
-                 const microCities = JSON.parse(datacities.toString());
-                 fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
-                     const status = treatError(err);
-                     if (status === 200) {
-                        const promotions=JSON.parse(dataPromotions.toString());
-                        let returnedPromotions=[];
-                        promotions.forEach(function(promotion) {
-                            if(query===promotion.category || query==null) {
+
+    app.get('/bigiot/access/promotions', function (req, res) {
+        fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
+            const status = treatError(err);
+            if (status === 200) {
+                let query = null;
+                if (req.query.query != null) query = req.query.query;
+                //console.log(query);
+                const microCities = JSON.parse(datacities.toString());
+                fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
+                    const status = treatError(err);
+                    if (status === 200) {
+                        const promotions = JSON.parse(dataPromotions.toString());
+                        let returnedPromotions = [];
+                        promotions.forEach(function (promotion) {
+                            if (query === promotion.category || query == null) {
                                 const microcityID = promotion.microcity - 1;
                                 returnedPromotions.push({
                                     "microcity": microCities[microcityID],
@@ -41,35 +41,35 @@ module.exports = function (app) {
                                 });
                             }
                         });
-                        res.json(returnedPromotions.sort(function(a, b) {
+                        res.json(returnedPromotions.sort(function (a, b) {
                             return parseFloat(a.service.location.distance) - parseFloat(b.service.location.distance);
                         }));
-                     } else {
+                    } else {
                         res.sendStatus(status);
-                     }
-                 });
-             } else {
-                 res.sendStatus(status);
-             }
-         });
-     });
+                    }
+                });
+            } else {
+                res.sendStatus(status);
+            }
+        });
+    });
 
     app.get('/bigiot/access/microcities/:id/promotions', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
             const status = treatError(err);
             if (status === 200) {
                 let query = null;
-                if(req.query.query!=null) query=req.query.query;
+                if (req.query.query != null) query = req.query.query;
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(datacities.toString());
                 fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
                     const status = treatError(err);
                     if (status === 200) {
-                        const promotions=JSON.parse(dataPromotions.toString());
-                        let returnedPromotions=[];
-                        promotions.forEach(function(promotion) {
-                            if(promotion.microcity-1 == microCityID) {
-                                if(query===promotion.category || query==null) {
+                        const promotions = JSON.parse(dataPromotions.toString());
+                        let returnedPromotions = [];
+                        promotions.forEach(function (promotion) {
+                            if (promotion.microcity - 1 === microCityID) {
+                                if (query === promotion.category || query == null) {
                                     returnedPromotions.push({
                                         "microcity": microCities[microCityID],
                                         "discount": promotion.discount,
@@ -78,7 +78,7 @@ module.exports = function (app) {
                                 }
                             }
                         });
-                        res.json(returnedPromotions.sort(function(a, b) {
+                        res.json(returnedPromotions.sort(function (a, b) {
                             return parseFloat(a.service.location.distance) - parseFloat(b.service.location.distance);
                         }));
                     } else {
@@ -138,10 +138,14 @@ module.exports = function (app) {
                 name: venue.name,
                 location: {
                     address: venue.location.address,
+                    formattedAddress: venue.location.formattedAddress,
                     lat: venue.location.lat,
                     lng: venue.location.lng,
                     distance: venue.location.distance
                 },
+                stats: venue.stats,
+                url: venue.url,
+                contact: venue.contact,
                 categories: buildFilteredCategories(venue.categories)
             });
         });

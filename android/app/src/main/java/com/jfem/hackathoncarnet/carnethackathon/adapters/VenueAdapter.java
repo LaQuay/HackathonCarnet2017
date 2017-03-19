@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import java.util.List;
 
 public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> {
 
+    private int lastPosition = -1;
     private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
     private final static int[] colors = {
             Color.parseColor("#DFE9C6"),
@@ -163,6 +166,8 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
                     return true;
                 }
             });
+
+            setAnimation(holder.mCardView, position);
         } catch (JSONException e) {
             Log.e("VenueAdapter", e.toString());
         }
@@ -192,5 +197,15 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             mVenueCategory = (ImageView) itemView.findViewById(R.id.venue_category);
             mVenueHeader = (LinearLayout) itemView.findViewById(R.id.venue_header);
         }
+    }
+
+    private void setAnimation(View view, int position) {
+
+        if (position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.up_translate_cardview);
+            view.startAnimation(animation);
+            lastPosition = position;
+        }
+
     }
 }

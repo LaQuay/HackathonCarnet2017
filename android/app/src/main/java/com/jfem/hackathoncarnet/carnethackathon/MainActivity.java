@@ -1,12 +1,8 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -17,11 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int PERMISSION_REQUEST_CODE_LOCATION = 1;
     private DrawerLayout drawer;
 
     @Override
@@ -43,17 +36,6 @@ public class MainActivity extends AppCompatActivity
         //Check first item
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
-
-        boolean locationServiceAvailable = LocationController.getInstance(getApplicationContext()).checkLocationServiceAvailable();
-        if (!locationServiceAvailable) {
-            requestLocationPermissions();
-        }
-    }
-
-    public void requestLocationPermissions() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
     }
 
     @Override
@@ -121,21 +103,5 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Snackbar.make(drawer, "Permission OK!", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                } else {
-                    Snackbar.make(drawer, "Permission denied", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            }
-        }
     }
 }

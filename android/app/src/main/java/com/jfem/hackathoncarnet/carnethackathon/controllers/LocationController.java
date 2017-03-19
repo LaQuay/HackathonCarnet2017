@@ -30,7 +30,6 @@ public class LocationController implements LocationListener, GoogleApiClient.Con
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
-    private OnLocationChangedListener callback;
 
     private LocationController(Context context) {
         mContext = context;
@@ -52,10 +51,9 @@ public class LocationController implements LocationListener, GoogleApiClient.Con
         }
     }
 
-    public boolean startLocation(@NonNull OnLocationChangedListener callback) {
+    public boolean startLocation() {
         if (!isLocationInProgress) {
             try {
-                this.callback = callback;
                 mGoogleApiClient = new GoogleApiClient.Builder(mContext)
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
@@ -105,7 +103,6 @@ public class LocationController implements LocationListener, GoogleApiClient.Con
     public void onLocationChanged(Location location) {
         this.lastLocation = location;
         if (location != null) {
-            callback.onLocationChanged(location);
             stopLocation();
         }
     }
@@ -128,9 +125,5 @@ public class LocationController implements LocationListener, GoogleApiClient.Con
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "onConnectedFailed");
         Log.e(TAG, connectionResult.getErrorMessage() + " code: " + connectionResult.getErrorCode());
-    }
-
-    public interface OnLocationChangedListener {
-        void onLocationChanged(Location location);
     }
 }

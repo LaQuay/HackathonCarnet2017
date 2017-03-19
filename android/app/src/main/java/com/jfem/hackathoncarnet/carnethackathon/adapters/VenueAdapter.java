@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.jfem.hackathoncarnet.carnethackathon.R;
@@ -135,20 +137,35 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
                                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                                             dialog.setContentView(R.layout.dialog_information);
                                             if (dialog.getWindow() != null) {
-                                                dialog.getWindow().setLayout(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.FILL_PARENT);
+                                                dialog.getWindow().setLayout(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT);
                                             }
 
                                             ImageView mHeader = (ImageView) dialog.findViewById(R.id.info_image);
+                                            TextView mName = (TextView) dialog.findViewById(R.id.info_name);
+                                            RatingBar mRating = (RatingBar) dialog.findViewById(R.id.info_rating);
                                             TextView mPhone = (TextView) dialog.findViewById(R.id.info_phone);
                                             TextView mUrl = (TextView) dialog.findViewById(R.id.info_url);
                                             TextView mAddress = (TextView) dialog.findViewById(R.id.info_address);
+                                            TextView mQuit = (TextView) dialog.findViewById(R.id.info_quit);
 
                                             ImageController.venueImageRequest(VenueAdapter.this.context, cardModel.getId(), mHeader);
 
                                             try {
-                                                mAddress.setText(cardModel.getLocation().getString("address"));
-                                                mUrl.setText(cardModel.getUrl());
-                                                mPhone.setText(cardModel.getContact().has("phone") ? cardModel.getContact().getString("phone") : "-");
+                                                mName.setText(cardModel.getName());
+                                                mRating.setProgress(cardModel.getRating());
+                                                mAddress.setText("Address: " + cardModel.getLocation().getString("address"));
+                                                mUrl.setText("Web page: " + cardModel.getUrl());
+                                                if (cardModel.getContact().has("phone")) {
+                                                    mPhone.setText("Phone number: " + cardModel.getContact().getString("phone"));
+                                                } else {
+                                                    mPhone.setText("Phone number: -");
+                                                }
+                                                mQuit.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        dialog.cancel();
+                                                    }
+                                                });
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }

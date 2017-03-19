@@ -13,6 +13,15 @@ public class Venue {
     private JSONObject contact;
     private JSONArray categories;
     private String url;
+    private Integer rating;
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 
     public String getId() {
         return id;

@@ -42,7 +42,7 @@ public class ImageController {
     }
 
     private static void getPhoto(final Context context, JSONObject res, final ImageView mHeader) throws JSONException {
-        final String url = res.getString("prefix") + "500x200" + res.getString("suffix");
+        final String url = res.getString("prefix") + "1000x600" + res.getString("suffix");
 
         ImageRequest imageRequest = new ImageRequest(url, new Response.Listener<Bitmap>() {
             @Override

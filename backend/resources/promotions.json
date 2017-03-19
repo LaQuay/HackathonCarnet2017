@@ -79,6 +79,46 @@
     ]
   }
 },{
+  "microcity":3,
+  "discount":"2 Euros",
+  "category":"Shopping",
+  "service": {
+    "id": "575fc812498ec8a99ccf86b0",
+    "name": "Coffee",
+    "location": {
+      "address": "C.C. Gran Via 2",
+      "lat": 41.359177,
+      "lng": 2.129178,
+      "distance": 29
+    },
+    "categories": [
+      {
+        "id": "4bf58dd8d48988d1e0931735",
+        "name": "Coffee Shop"
+      }
+    ]
+  }
+},{
+  "microcity":3,
+  "discount":"10 Euros",
+  "category":"Shopping",
+  "service": {
+    "id": "5894ba2f7b43b42ecdbef713",
+    "name": "The Phone House",
+    "location": {
+      "address": "Avinguda de la Gran Via, 75",
+      "lat": 41.358948,
+      "lng": 2.129101,
+      "distance": 49
+    },
+    "categories": [
+      {
+        "id": "4f04afc02fb6e1c99f3db0bc",
+        "name": "Mobile Phone Shop"
+      }
+    ]
+  }
+},{
   "microcity":1,
   "discount":"5 Euros",
   "category":"Transport",

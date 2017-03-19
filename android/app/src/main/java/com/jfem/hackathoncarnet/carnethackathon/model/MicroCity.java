@@ -6,7 +6,6 @@ public class MicroCity {
     private String name;
     private String address;
     private Coordinates coordinates;
-    private Services services;
 
     public Integer getId() {
         return id;
@@ -16,12 +15,8 @@ public class MicroCity {
         this.id = id;
     }
 
-    public Services getServices() {
-        return services;
-    }
-
-    public void setServices(Services services) {
-        this.services = services;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -50,6 +45,6 @@ public class MicroCity {
 
     @Override
     public String toString() {
-        return "MicroCity [name = " + name + ",\n address = " + address + ",\n services = " + services + ",\n coordinates = " + coordinates + "]";
+        return "MicroCity [id = " + id + ", name = " + name + ",\n address = " + address + ",\n coordinates = " + coordinates + "]";
     }
 }

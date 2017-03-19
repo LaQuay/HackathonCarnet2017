@@ -10,7 +10,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.model.Mobility;
 import com.jfem.hackathoncarnet.carnethackathon.model.Services;
 
 import org.json.JSONArray;
@@ -62,14 +61,8 @@ public class MicroCityController {
                 JSONObject microCityJSONObject = microCityJSONArray.getJSONObject(i);
 
                 MicroCity microCity = new MicroCity();
-
-                // Id
                 microCity.setId(microCityJSONObject.getInt("id"));
-
-                // Name
                 microCity.setName(microCityJSONObject.getString("name"));
-
-                // Addresss
                 microCity.setAddress(microCityJSONObject.getString("address"));
 
                 // Coordinates
@@ -77,6 +70,7 @@ public class MicroCityController {
                 Coordinates coordinates = new Coordinates(coordinatesJSON.getDouble("lat"),coordinatesJSON.getDouble("lng"));
                 microCity.setCoordinates(coordinates);
 
+                /*
                 // Services
                 if(microCityJSONObject.has("services")){
                     JSONObject servicesJSON = microCityJSONObject.getJSONObject("services");
@@ -99,6 +93,7 @@ public class MicroCityController {
 
                     microCity.setServices(services);
                 }
+                */
 
                 microCitiesArray.add(microCity);
             }

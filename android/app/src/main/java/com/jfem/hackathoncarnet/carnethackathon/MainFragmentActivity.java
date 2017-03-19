@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -32,10 +33,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.DistanceController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.MicroCityController;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
+import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import java.text.DecimalFormat;
@@ -48,7 +51,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback,
-        DistanceController.DistanceResolvedCallback {
+        DistanceController.DistanceResolvedCallback, ServiceController.ServiceResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
@@ -68,6 +71,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Marker markerUserLocation;
     private int numDistanceInfoRequestLeft;
 
+    private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
+
     public static MainFragmentActivity newInstance() {
         return new MainFragmentActivity();
     }
@@ -80,29 +85,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         this.inflater = inflater;
 
         baseSnackBarView = getActivity().findViewById(R.id.drawer_layout);
-
-        /*button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RequestQueue queue = Volley.newRequestQueue(getActivity());
-                String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s,%s&destinations=%s,%s&key=%s";
-                url = String.format(url, location.getLatitude(), location.getLongitude(),
-                        "41.4050329", "2.1910341999999", getResources().getString(R.string.google_maps_key));
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
-                        Log.e(TAG, response);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-                queue.add(stringRequest);
-            }
-        });*/
 
         setUpElements();
         setUpListeners();
@@ -117,6 +99,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
 
         mapView.getMapAsync(this);
+
+        serviceResolvedCallback = this;
 
         //Getting location of user
         startLocation();
@@ -367,23 +351,35 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     @Override
                     public void onClick(View v) {
                         //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
-                        Log.e(TAG, microCityMarkerArray.get(mcid).getMicroCity().getServices() + "");
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                         builder.setTitle("Services in " + microCityMarkerArray.get(mcid).getMicroCity().getName());
                         builder.setCancelable(true);
 
-                        String servicesStr = "No available services";
-                        if (microCityMarkerArray.get(mcid).getMicroCity().getServices() != null)
-                            servicesStr = microCityMarkerArray.get(mcid).getMicroCity().getServices().toString();
-                        builder.setMessage(servicesStr);
-                        builder.show();
+                        //String servicesStr = "No available services";
+                        //builder.setMessage(servicesStr);
+                        //builder.show();
 
+                        Location loc = new Location("pp");//provider name is unnecessary
+                        loc.setLatitude(microCityMarkerArray.get(mcid).getMarker().getPosition().latitude);//your coords of course
+                        loc.setLongitude(microCityMarkerArray.get(mcid).getMarker().getPosition().longitude);
+                        ServiceController.serviceRequest(getContext(), loc, builder, serviceResolvedCallback);
                     }
                 });
 
                 microCitiesLinearContainer.addView(mcView);
             }
         }
+    }
+
+    @Override
+    public void onServiceResolved(ArrayList<Service> serviceArray, AlertDialog.Builder builder) {
+        String mss = "";
+        for (int i = 0; i < serviceArray.size(); ++i) {
+            Log.e(TAG, serviceArray.get(i).getName());
+            mss += serviceArray.get(i).getName() + "\n";
+        }
+        builder.setMessage(mss);
+        builder.show();
     }
 }

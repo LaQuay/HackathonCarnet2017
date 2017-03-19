@@ -1,30 +1,17 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.Marker;
 import com.jfem.hackathoncarnet.carnethackathon.adapters.DiscountAdapter;
-import com.jfem.hackathoncarnet.carnethackathon.adapters.VenueAdapter;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.DiscountController;
-import com.jfem.hackathoncarnet.carnethackathon.controllers.DistanceController;
-import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Discount;
-import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +20,10 @@ public class DiscountsFragment extends Fragment implements DiscountController.Di
     public final static String TAG = DiscountsFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = " ";
-
+    private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
     private View rootView;
-
     private DiscountController.DiscountResolvedCallback discountResolvedCallback;
     private List<Discount> mData;
-
-    private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
 
     public static DiscountsFragment newInstance(int position) {
         DiscountsFragment fragment = new DiscountsFragment();

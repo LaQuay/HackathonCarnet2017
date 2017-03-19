@@ -44,7 +44,7 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private View rootView;
-    private List<MicroCityView> microCityViewArray;
+    private ArrayList<MicroCityView> microCityViewArray;
     private Location location;
     private DistanceController.DistanceResolvedCallback distanceResolvedCallback;
     private int numDistanceInfoRequestLeft;
@@ -157,6 +157,8 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
 
         --numDistanceInfoRequestLeft;
         if (this.numDistanceInfoRequestLeft == 0) {
+            microCityViewArray = Utility.sortMicroCityByDistanceTime(microCityViewArray);
+
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
             mRecyclerView.setAdapter(new MicroCityViewAdapter(microCityViewArray));

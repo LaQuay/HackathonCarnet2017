@@ -13,8 +13,12 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by LaQuay on 18/03/2017.
@@ -73,5 +77,21 @@ public class Utility {
         float[] dist = new float[1];
         Location.distanceBetween(latLngInit.latitude, latLngInit.longitude, latLngEnd.latitude, latLngEnd.longitude, dist);
         return dist[0];
+    }
+
+    public static ArrayList<MicroCityView> sortMicroCityByDistanceTime(ArrayList<MicroCityView> microCityMarkerArray) {
+        Collections.sort(microCityMarkerArray, new Comparator<MicroCityView>() {
+            @Override
+            public int compare(MicroCityView mcv1, MicroCityView mcv2) {
+                if (mcv1.getTime() > mcv2.getTime()) return 1;
+                else if (mcv1.getTime() < mcv2.getTime()) return -1;
+                else {
+                    if (mcv1.getDistance() > mcv2.getDistance()) return 1;
+                    else return -1;
+                }
+            }
+        });
+
+        return microCityMarkerArray;
     }
 }

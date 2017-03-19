@@ -44,8 +44,6 @@ import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -66,7 +64,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Location location;
     private Snackbar snackBar;
 
-    private ArrayList<MicroCityView> microCityMarkerArray = null;
+    private ArrayList<MicroCityView> microCityViewArray = null;
     private Marker markerUserLocation;
     private int numDistanceInfoRequestLeft;
 
@@ -111,7 +109,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                if (location != null && microCityMarkerArray != null && !microCityMarkerArray.isEmpty()) {
+                if (location != null && microCityViewArray != null && !microCityViewArray.isEmpty()) {
                     requestDistanceMicroCity();
                 } else {
                     handler.postDelayed(this, 100);
@@ -200,11 +198,11 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if (marker != markerUserLocation && microCityMarkerArray != null) {
-            for (int i = 0; i < microCityMarkerArray.size(); ++i) {
-                if (microCityMarkerArray.get(i).getMarker().getTag() == marker.getTag()) {
+        if (marker != markerUserLocation && microCityViewArray != null) {
+            for (int i = 0; i < microCityViewArray.size(); ++i) {
+                if (microCityViewArray.get(i).getMarker().getTag() == marker.getTag()) {
                     //TODO Open dialog with info instead of going
-                    focusOnMarker(microCityMarkerArray.get(i).getMarker());
+                    focusOnMarker(microCityViewArray.get(i).getMarker());
                     break;
                 }
             }
@@ -224,7 +222,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         //microCities.add(fakeMicroCity);
         //END
 
-        this.microCityMarkerArray = new ArrayList<>();
+        this.microCityViewArray = new ArrayList<>();
         numDistanceInfoRequestLeft = microCities.size();
 
         for (int i = 0; i < microCities.size(); ++i) {
@@ -236,13 +234,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             );
             marker.setAlpha(0.7f);
 
-            microCityMarkerArray.add(new MicroCityView(currentMicroCity, marker));
+            microCityViewArray.add(new MicroCityView(currentMicroCity, marker));
         }
     }
 
     private void requestDistanceMicroCity() {
-        for (int i = 0; i < microCityMarkerArray.size(); ++i) {
-            DistanceController.distanceRequest(getContext(), this.location, this.microCityMarkerArray.get(i), this);
+        for (int i = 0; i < microCityViewArray.size(); ++i) {
+            DistanceController.distanceRequest(getContext(), this.location, this.microCityViewArray.get(i), this);
         }
     }
 
@@ -296,19 +294,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         microCityMarker.setTime(distanceProperties.getTime());
 
         if (this.numDistanceInfoRequestLeft == 0) {
-            Collections.sort(microCityMarkerArray, new Comparator<MicroCityView>() {
-                @Override
-                public int compare(MicroCityView mcv1, MicroCityView mcv2) {
-                    if (mcv1.getTime() > mcv2.getTime()) return 1;
-                    else if (mcv1.getTime() < mcv2.getTime()) return -1;
-                    else {
-                        if (mcv1.getDistance() > mcv2.getDistance()) return 1;
-                        else return -1;
-                    }
-                }
-            });
+            microCityViewArray = Utility.sortMicroCityByDistanceTime(microCityViewArray);
 
-            for (int i = 0; i < microCityMarkerArray.size(); ++i) {
+            for (int i = 0; i < microCityViewArray.size(); ++i) {
                 View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
                 TextView cityNameText = (TextView) mcView.findViewById(R.id.item_microcity_name_text);
@@ -318,22 +306,22 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
                 ImageButton cityServicesButton = (ImageButton) mcView.findViewById(R.id.item_microcity_services_button);
 
-                cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
-                cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
+                cityNameText.setText(microCityViewArray.get(i).getMicroCity().getName());
+                cityAddressText.setText(microCityViewArray.get(i).getMicroCity().getAddress());
                 cityNumberText.setText("" + (i + 1));
-                cityTimeText.setText(Utility.decimalFormat(microCityMarkerArray.get(i).getTime()) + " min");
-                cityKmText.setText(Utility.decimalFormat(microCityMarkerArray.get(i).getDistance()) + " km");
+                cityTimeText.setText(Utility.decimalFormat(microCityViewArray.get(i).getTime()) + " min");
+                cityKmText.setText(Utility.decimalFormat(microCityViewArray.get(i).getDistance()) + " km");
 
                 Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
                 bitmapMarker = Utility.addTextToBitmap(getContext(), "" + (i + 1), bitmapMarker);
-                microCityMarkerArray.get(i).getMarker().setIcon(BitmapDescriptorFactory.fromBitmap(bitmapMarker));
-                microCityMarkerArray.get(i).getMarker().setTag(i);
+                microCityViewArray.get(i).getMarker().setIcon(BitmapDescriptorFactory.fromBitmap(bitmapMarker));
+                microCityViewArray.get(i).getMarker().setTag(i);
 
                 final int mcid = i;
                 mcView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        focusOnMarker(microCityMarkerArray.get(mcid).getMarker());
+                        focusOnMarker(microCityViewArray.get(mcid).getMarker());
                     }
                 });
                 mcView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -344,13 +332,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         builder.setTitle("Navigate to this MicroCity?");
                         builder.setCancelable(true);
                         builder.setMessage("Do you want to navigate to the MicroCity " +
-                                microCityMarkerArray.get(mcid).getMicroCity().getName() + "?");
+                                microCityViewArray.get(mcid).getMicroCity().getName() + "?");
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 startNavigationToDestination(new LatLng(
-                                        microCityMarkerArray.get(mcid).getMarker().getPosition().latitude,
-                                        microCityMarkerArray.get(mcid).getMarker().getPosition().longitude),
-                                        microCityMarkerArray.get(mcid).getMicroCity().getId());
+                                                microCityViewArray.get(mcid).getMarker().getPosition().latitude,
+                                                microCityViewArray.get(mcid).getMarker().getPosition().longitude),
+                                        microCityViewArray.get(mcid).getMicroCity().getId());
                             }
                         });
                         builder.setNegativeButton("No", null);
@@ -361,13 +349,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityServicesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (microCityMarkerArray.get(mcid).getMicroCity().getId() == null) {
+                        if (microCityViewArray.get(mcid).getMicroCity().getId() == null) {
                             Location loc = new Location("pp");
-                            loc.setLatitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLat());
-                            loc.setLongitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLng());
-                            ServiceController.serviceByMCLocationRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), loc, serviceResolvedCallback);
+                            loc.setLatitude(microCityViewArray.get(mcid).getMicroCity().getCoordinates().getLat());
+                            loc.setLongitude(microCityViewArray.get(mcid).getMicroCity().getCoordinates().getLng());
+                            ServiceController.serviceByMCLocationRequest(getContext(), microCityViewArray.get(mcid).getMicroCity().getId(), loc, serviceResolvedCallback);
                         } else {
-                            ServiceController.serviceByMCIdRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), serviceResolvedCallback);
+                            ServiceController.serviceByMCIdRequest(getContext(), microCityViewArray.get(mcid).getMicroCity().getId(), serviceResolvedCallback);
                         }
                     }
                 });
@@ -402,8 +390,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             }
         }
         int posMicroCity = -1;
-        for (int i = 0; i < microCityMarkerArray.size(); ++i) {
-            if (microCityMarkerArray.get(i).getMicroCity().getId() == idMicroCity) {
+        for (int i = 0; i < microCityViewArray.size(); ++i) {
+            if (microCityViewArray.get(i).getMicroCity().getId() == idMicroCity) {
                 posMicroCity = i;
                 break;
             }
@@ -411,13 +399,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         if (posMicroCity >= 0) {
             final int posMC = posMicroCity;
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
-            builder.setTitle("Services in " + microCityMarkerArray.get(posMC).getMicroCity().getName());
+            builder.setTitle("Services in " + microCityViewArray.get(posMC).getMicroCity().getName());
             builder.setCancelable(true);
             builder.setMessage(Html.fromHtml(mss));
             builder.setPositiveButton("Navigate", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    startNavigationToDestination(microCityMarkerArray.get(posMC).getMicroCity().getCoordinates().getLatLng(),
-                            microCityMarkerArray.get(posMC).getMicroCity().getId());
+                    startNavigationToDestination(microCityViewArray.get(posMC).getMicroCity().getCoordinates().getLatLng(),
+                            microCityViewArray.get(posMC).getMicroCity().getId());
                 }
             });
             builder.setNegativeButton("Cancel", null);

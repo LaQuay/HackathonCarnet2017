@@ -81,11 +81,11 @@ public class DiscountsFragment extends Fragment implements DiscountController.Di
         mData = discountArray;
 
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.discount_recycler_view);
-        //mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        //mRecyclerView.setAdapter(new DiscountAdapter(mData, getContext()));
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(new DiscountAdapter(mData, getContext()));
+
+        //RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
+        //mRecyclerView.setLayoutManager(mLayoutManager);
+        //mRecyclerView.setAdapter(new DiscountAdapter(mData, getContext()));
     }
 }

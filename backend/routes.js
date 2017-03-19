@@ -9,46 +9,47 @@ module.exports = function (app) {
 
     app.get('/bigiot/access/microcities', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
-            treatError(res, err);
-            res.json(JSON.parse(data.toString()));
-        });
-        /*fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
-            treatError(res, err);
-            let microcities = JSON.parse(data.toString());
-
-            function getVenues(callback) {
-                let calls = microcities.length;
-                microcities.forEach(function(microcity, index, microcities) {
-                    req.query.ll = microcity.coordinates.lat + ',' + microcity.coordinates.lng
-                    let positionQuerry = req.query;
-                    foursquare.getVenues(positionQuerry, function (err2, results) {
-                        treatError(res, err2);
-
-                        microcities[index].venues = buildFilteredVenues(results.response.venues);
-                        let carServices = JSON.parse(fs.readFileSync('./resources/car-services.json', 'utf8'));
-                        carServices.forEach(function (carService) {
-                            carService.location.lat = microcity.coordinates.lat;
-                            carService.location.lng = microcity.coordinates.lng;
-                            microcities[index].venues.push(carService);
-                        });
-                        --calls;
-                        if (calls == 0) callback();
-                    });
-                });
+            const status = treatError(err);
+            if (status === 200) {
+                res.json(JSON.parse(data.toString()));
+            } else {
+                res.sendStatus(status);
             }
+        });
+    });
 
-            getVenues(function () {
-                //this will be run after getVenues is finished.
-                res.json(microcities);
-                // Rest of your code here.
-            });
-        });*/
+    app.get('/bigiot/access/microcities/:id/services', function (req, res) {
+        fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
+            const status = treatError(err);
+            if (status === 200) {
+                const microCityID = req.params.id - 1;
+                const microCities = JSON.parse(data.toString());
+
+                if (microCityID < 0 || microCityID >= microCities.length) return res.sendStatus(400);
+
+                const params = {
+                    ll: microCities[microCityID].coordinates.lat + ',' + microCities[microCityID].coordinates.lng,
+                };
+
+                foursquare.getVenues(params, function (err, results) {
+                    if (treatError(res, err)) {
+                        res.json(buildFilteredVenues(results.response.venues));
+                    }
+                });
+            } else {
+                res.sendStatus(status);
+            }
+        });
     });
 
     app.get('/bigiot/access/services', function (req, res) {
         foursquare.getVenues(req.query, function (err, results) {
-            treatError(res, err);
-            res.json(buildFilteredVenues(results.response.venues));
+            const status = treatError(err);
+            if (status === 200) {
+                res.json(buildFilteredVenues(results.response.venues));
+            } else {
+                res.sendStatus(status);
+            }
         });
     });
 
@@ -83,14 +84,14 @@ module.exports = function (app) {
         return filteredCategories;
     }
 
-    function treatError(res, err) {
+    function treatError(err) {
         if (err) {
             console.log(err);
-            if (err.errorType === 'param_error') res.status(400).send();
-            else if (err.errorType === 'invalid_auth') res.status(403).send();
-            else res.status(500).send();
-
+            if (err.errorType === 'param_error') return 400;
+            else if (err.errorType === 'invalid_auth') return 403;
+            else return 500;
         }
+        return 200;
     }
 
 };

@@ -22,6 +22,7 @@
                 android:id="@+id/fragment_main_your_location_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
                 android:text="..."
                 android:textSize="18sp" />
 
@@ -35,10 +36,12 @@
     </android.support.v7.widget.CardView>
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
+        android:fontFamily="sans-serif-condensed"
         android:text="Nearest MicroCities"
         android:textSize="26sp" />
 

@@ -33,14 +33,15 @@
                 android:id="@+id/fragment_microcity_name_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-smallcaps"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/fragment_microcity_address_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
                 android:paddingTop="5dp"
-                android:text="C/Ayyyy lmao 31"
                 android:textSize="15sp" />
 
             <LinearLayout
@@ -53,7 +54,7 @@
                     android:id="@+id/fragment_microcity_time_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="pepe"
+                    android:fontFamily="sans-serif-condensed"
                     android:textSize="16sp" />
 
                 <TextView
@@ -61,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="pepon"
+                    android:fontFamily="sans-serif-condensed"
                     android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>

@@ -2,7 +2,6 @@ package com.jfem.hackathoncarnet.carnethackathon.controllers;
 
 import android.content.Context;
 import android.location.Location;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -24,8 +23,8 @@ public class ServiceController {
     private final static String API_ID_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
     private final static String API_LOC_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
 
-    public static void serviceByMCIdRequest(Context context, Integer idMC, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
-        String url = API_ID_BASE + "/" + idMC + "/services";
+    public static void serviceByMCIdRequest(Context context, final Integer idMicroCity, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
+        String url = API_ID_BASE + "/" + idMicroCity + "/services";
         Log.e(TAG, url);
 
         // Request a string response from the provided URL.
@@ -35,7 +34,7 @@ public class ServiceController {
                     @Override
                     public void onResponse(JSONArray response) {
                         ArrayList<Service> serviceArray = parseServiceJSONArray(response);
-                        serviceResolvedCallback.onServiceResolved(serviceArray, builder);
+                        serviceResolvedCallback.onServiceResolved(idMicroCity, serviceArray);
                     }
                 }, new Response.ErrorListener() {
 
@@ -49,7 +48,7 @@ public class ServiceController {
         VolleyController.getInstance(context).addToQueue(jsonArrayRequest);
     }
 
-    public static void serviceByMCLocationRequest(Context context, Location location, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
+    public static void serviceByMCLocationRequest(Context context, final Integer idMicroCity, Location location, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
         String url = API_LOC_BASE + "?ll=" + location.getLatitude() + "," + location.getLongitude();
         Log.e(TAG, url);
 
@@ -60,7 +59,7 @@ public class ServiceController {
                     @Override
                     public void onResponse(JSONArray response) {
                         ArrayList<Service> serviceArray = parseServiceJSONArray(response);
-                        serviceResolvedCallback.onServiceResolved(serviceArray, builder);
+                        serviceResolvedCallback.onServiceResolved(idMicroCity, serviceArray);
                     }
                 }, new Response.ErrorListener() {
 
@@ -96,6 +95,6 @@ public class ServiceController {
     }
 
     public interface ServiceResolvedCallback {
-        void onServiceResolved(ArrayList<Service> serviceArray, AlertDialog.Builder builder);
+        void onServiceResolved(Integer idMicroCity, ArrayList<Service> serviceArray);
     }
 }

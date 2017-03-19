@@ -348,23 +348,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityServicesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //LinearLayout linearLayout = (((LinearLayout) v).getChildAt(0));
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
-                        builder.setTitle("Services in " + microCityMarkerArray.get(mcid).getMicroCity().getName());
-                        builder.setCancelable(true);
-
                         if (microCityMarkerArray.get(mcid).getMicroCity().getId() == null) {
                             Location loc = new Location("pp");
                             loc.setLatitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLat());
                             loc.setLongitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLng());
-                            ServiceController.serviceByMCLocationRequest(getContext(), loc, builder, serviceResolvedCallback);
-                            //String servicesStr = "No available services";
-                            //builder.setMessage(servicesStr);
-                            //builder.show();
-                        }
-                        else {
-                            ServiceController.serviceByMCIdRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
+                            ServiceController.serviceByMCLocationRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), loc, serviceResolvedCallback);
+                        } else {
+                            ServiceController.serviceByMCIdRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), serviceResolvedCallback);
                         }
                     }
                 });
@@ -375,7 +365,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     @Override
-    public void onServiceResolved(ArrayList<Service> serviceArray, AlertDialog.Builder builder) {
+    public void onServiceResolved(final Integer idMicroCity, ArrayList<Service> serviceArray) {
         String mss = "";
         mss += "<b>Restaurants</b><br>";
         for (int i = 0; i < serviceArray.size(); ++i) {
@@ -398,7 +388,17 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 }
             }
         }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
+        builder.setTitle("Services in " + microCityMarkerArray.get(idMicroCity).getMicroCity().getName());
+        builder.setCancelable(true);
         builder.setMessage(Html.fromHtml(mss));
+        builder.setPositiveButton("Navigate", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                startNavigationToDestination(microCityMarkerArray.get(idMicroCity).getMicroCity().getCoordinates().getLatLng());
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
         builder.show();
     }
 

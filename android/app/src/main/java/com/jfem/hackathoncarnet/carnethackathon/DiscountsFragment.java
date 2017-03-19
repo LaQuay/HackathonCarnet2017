@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -79,11 +80,12 @@ public class DiscountsFragment extends Fragment implements DiscountController.Di
     public void onDiscountResolved(ArrayList<Discount> discountArray) {
         mData = discountArray;
 
-        Log.e("DF", "onDiscountResolved");
-
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.discount_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        //mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        //mRecyclerView.setAdapter(new DiscountAdapter(mData, getContext()));
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(new DiscountAdapter(mData, getContext()));
-        Log.e("DF", "onDiscountResolved-2");
     }
 }

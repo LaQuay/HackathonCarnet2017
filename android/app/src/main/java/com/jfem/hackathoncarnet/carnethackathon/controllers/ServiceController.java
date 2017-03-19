@@ -57,6 +57,7 @@ public class ServiceController {
                 if (i != 0) url += ",";
                 url += queryItems.get(i);
             }
+            url += "&radius=800";
         }
         Log.e(TAG, url);
 

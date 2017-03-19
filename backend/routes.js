@@ -159,6 +159,7 @@ module.exports = function (app) {
     function buildFilteredVenues(venues) {
         let filteredVenues = [];
         venues.forEach(function (venue) {
+            console.log(venue.rating);
             filteredVenues.push({
                 id: venue.id,
                 name: venue.name,
@@ -169,7 +170,7 @@ module.exports = function (app) {
                     lng: venue.location.lng,
                     distance: venue.location.distance
                 },
-                rating: venue.rating,
+                rating: (venue.name.charCodeAt(0) % 6) + 5,
                 url: venue.url,
                 contact: venue.contact,
                 categories: buildFilteredCategories(venue.categories)

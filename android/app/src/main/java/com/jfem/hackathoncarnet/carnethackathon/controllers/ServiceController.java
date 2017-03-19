@@ -21,10 +21,36 @@ public class ServiceController {
 
     private static final String TAG = ServiceController.class.getSimpleName();
 
-    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
+    private final static String API_ID_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
+    private final static String API_LOC_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
 
-    public static void serviceRequest(Context context, Integer idMC, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
-        String url = API_BASE + "/" + idMC + "/services";
+    public static void serviceByMCIdRequest(Context context, Integer idMC, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
+        String url = API_ID_BASE + "/" + idMC + "/services";
+        Log.e(TAG, url);
+
+        // Request a string response from the provided URL.
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        ArrayList<Service> serviceArray = parseServiceJSONArray(response);
+                        serviceResolvedCallback.onServiceResolved(serviceArray, builder);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "That didn't work!");
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        VolleyController.getInstance(context).addToQueue(jsonArrayRequest);
+    }
+
+    public static void serviceByMCLocationRequest(Context context, Location location, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
+        String url = API_LOC_BASE + "?ll=" + location.getLatitude() + "," + location.getLongitude();
         Log.e(TAG, url);
 
         // Request a string response from the provided URL.

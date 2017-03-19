@@ -337,14 +337,18 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         builder.setTitle("Services in " + microCityMarkerArray.get(mcid).getMicroCity().getName());
                         builder.setCancelable(true);
 
-                        //String servicesStr = "No available services";
-                        //builder.setMessage(servicesStr);
-                        //builder.show();
-
-                        //Location loc = new Location("pp");//provider name is unnecessary
-                        //loc.setLatitude(microCityMarkerArray.get(mcid).getMarker().getPosition().latitude);//your coords of course
-                        //loc.setLongitude(microCityMarkerArray.get(mcid).getMarker().getPosition().longitude);
-                        ServiceController.serviceRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
+                        if (microCityMarkerArray.get(mcid).getMicroCity().getId() == null) {
+                            Location loc = new Location("pp");
+                            loc.setLatitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLat());
+                            loc.setLongitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLng());
+                            ServiceController.serviceByMCLocationRequest(getContext(), loc, builder, serviceResolvedCallback);
+                            //String servicesStr = "No available services";
+                            //builder.setMessage(servicesStr);
+                            //builder.show();
+                        }
+                        else {
+                            ServiceController.serviceByMCIdRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
+                        }
                     }
                 });
 

@@ -1,64 +1,80 @@
 [{
   "microcity":3,
   "discount":"5 Euros",
-  "service":{
-    "id": "NA",
-    "name": "Charging station",
+  "category":"Fun",
+  "service": {
+    "id": "4b636f7ef964a520a6792ae3",
+    "name": "Filmax Granvia 3D",
     "location": {
-      "distance": 0
+      "address": "C.C. Gran Via 2",
+      "lat": 41.358397090556124,
+      "lng": 2.1287051516589477,
+      "distance": 111
     },
     "categories": [
       {
-        "id": "NA",
-        "name": "Charging station"
+        "id": "4bf58dd8d48988d180941735",
+        "name": "Multiplex"
       }
     ]
   }
 },{
   "microcity":3,
   "discount":"5 Euros",
-  "service":{
-    "id": "NA",
-    "name": "ITV",
+  "category":"Shopping",
+  "service": {
+    "id": "4c542fbe72cf0f4729801cd4",
+    "name": "H&M",
     "location": {
-      "distance": 0
+      "address": "Avda. Gran Via, 75-97",
+      "lat": 41.358398472599994,
+      "lng": 2.128911294383768,
+      "distance": 109
     },
     "categories": [
       {
-        "id": "NA",
-        "name": "ITV"
+        "id": "4bf58dd8d48988d103951735",
+        "name": "Clothing Store"
       }
     ]
   }
 },{
   "microcity":3,
   "discount":"5 Euros",
-  "service":{
-    "id": "NA",
-    "name": "Car Wash",
+  "category":"Food",
+  "service": {
+    "id": "4fc61031e4b05ab8c3d23a12",
+    "name": "UDON Gran Via 2",
     "location": {
-      "distance": 0
+      "address": "Gran Via de les Corts Catalanes 75",
+      "lat": 41.35836116082796,
+      "lng": 2.129026351200163,
+      "distance": 113
     },
     "categories": [
       {
-        "id": "NA",
-        "name": "Car Wash"
+        "id": "4bf58dd8d48988d111941735",
+        "name": "Japanese Restaurant"
       }
     ]
   }
 },{
   "microcity":2,
   "discount":"2 Euros",
-  "service":{
-    "id": "NA",
-    "name": "Car Wash",
+  "category":"Shopping",
+  "service": {
+    "id": "4adcda59f964a520164421e3",
+    "name": "Disney Store",
     "location": {
-      "distance": 0
+      "address": "Avinguda Diagonal 575",
+      "lat": 41.38956631246495,
+      "lng": 2.134582987771513,
+      "distance": 42
     },
     "categories": [
       {
-        "id": "NA",
-        "name": "Car Wash"
+        "id": "4bf58dd8d48988d105951735",
+        "name": "Kids Store"
       }
     ]
   }

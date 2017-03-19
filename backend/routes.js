@@ -22,6 +22,9 @@ module.exports = function (app) {
          fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
              const status = treatError(err);
              if (status === 200) {
+                 let query = null;
+                 if(req.query.query!=null) query=req.query.query;
+                 //console.log(query);
                  const microCities = JSON.parse(datacities.toString());
                  fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
                      const status = treatError(err);
@@ -29,14 +32,18 @@ module.exports = function (app) {
                         const promotions=JSON.parse(dataPromotions.toString());
                         let returnedPromotions=[];
                         promotions.forEach(function(promotion) {
-                            const microcityID=promotion.microcity-1;
-                            returnedPromotions.push({
-                                "microcity":microCities[microcityID],
-                                "discount":promotion.discount,
-                                "service":promotion.service
-                            });
+                            if(query===promotion.category || query==null) {
+                                const microcityID = promotion.microcity - 1;
+                                returnedPromotions.push({
+                                    "microcity": microCities[microcityID],
+                                    "discount": promotion.discount,
+                                    "service": promotion.service
+                                });
+                            }
                         });
-                        res.json(returnedPromotions);
+                        res.json(returnedPromotions.sort(function(a, b) {
+                            return parseFloat(a.service.location.distance) - parseFloat(b.service.location.distance);
+                        }));
                      } else {
                         res.sendStatus(status);
                      }
@@ -51,6 +58,8 @@ module.exports = function (app) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
             const status = treatError(err);
             if (status === 200) {
+                let query = null;
+                if(req.query.query!=null) query=req.query.query;
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(datacities.toString());
                 fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
@@ -60,14 +69,18 @@ module.exports = function (app) {
                         let returnedPromotions=[];
                         promotions.forEach(function(promotion) {
                             if(promotion.microcity-1 == microCityID) {
-                                returnedPromotions.push({
-                                    "microcity": microCities[microCityID],
-                                    "discount": promotion.discount,
-                                    "service": promotion.service
-                                });
+                                if(query===promotion.category || query==null) {
+                                    returnedPromotions.push({
+                                        "microcity": microCities[microCityID],
+                                        "discount": promotion.discount,
+                                        "service": promotion.service
+                                    });
+                                }
                             }
                         });
-                        res.json(returnedPromotions);
+                        res.json(returnedPromotions.sort(function(a, b) {
+                            return parseFloat(a.service.location.distance) - parseFloat(b.service.location.distance);
+                        }));
                     } else {
                         res.sendStatus(status);
                     }

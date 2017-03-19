@@ -122,11 +122,11 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         handler.postDelayed(r, 250);
 
         // TODO: delete this
-        /*Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, 1);
+        Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, 1, 41.4050329, 2.19103419999999);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
                 .addToBackStack(null)
-                .commit();*/
+                .commit();
 
         /*try {
             MicroCityConsumerBigIot.getMicrocities();
@@ -264,6 +264,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 double dist = Utility.distanceBetween2LatLng(this.selectedMCLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
                 if (dist < 100000) {
                     final Integer selMCId = this.selectedMCId;
+                    final LatLng selMCLoc = this.selectedMCLatLng;
                     Log.e(TAG, "ID-MC: " + selMCId);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
@@ -274,7 +275,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                             Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();
 
                             //TODO Change valid ID
-                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, selMCId);
+                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, selMCId, selMCLoc.latitude, selMCLoc.longitude);
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
                                     .addToBackStack(null)

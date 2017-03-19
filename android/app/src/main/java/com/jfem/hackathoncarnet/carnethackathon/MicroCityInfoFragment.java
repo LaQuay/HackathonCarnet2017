@@ -2,6 +2,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -39,6 +40,8 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
+    private static final String ARG_LAT_MICROCITY = "latitude";
+    private static final String ARG_LNG_MICROCITY = "longitude";
     private final static String API_BASE = "";
 
     private View rootView;
@@ -49,16 +52,19 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private List<Venue> mData;
     private int idMicroCity;
+    private Location locMicroCity;
 
     private ArrayList<Marker> servicesMarkers;
 
     private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
-    public static MicroCityInfoFragment newInstance(int position, int idMicroCity) {
+    public static MicroCityInfoFragment newInstance(int position, int idMicroCity, double latMicroCity, double lngMicroCity) {
         MicroCityInfoFragment fragment = new MicroCityInfoFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, position);
         args.putInt(ARG_ID_MICROCITY, idMicroCity);
+        args.putDouble(ARG_LAT_MICROCITY, latMicroCity);
+        args.putDouble(ARG_LNG_MICROCITY, lngMicroCity);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +74,13 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         super.onCreate(savedInstanceState);
         mData = new ArrayList<>();
         this.idMicroCity = getArguments().getInt(ARG_ID_MICROCITY);
-        Log.e(TAG, "ID-MC: " + this.idMicroCity);
+
+        Location loc = new Location("pp");
+        loc.setLatitude(getArguments().getDouble(ARG_LAT_MICROCITY));
+        loc.setLongitude(getArguments().getDouble(ARG_LNG_MICROCITY));
+        this.locMicroCity = loc;
+
+        Log.e(TAG, "ID-MC: " + this.idMicroCity + " loc: " + this.locMicroCity);
 
         serviceResolvedCallback = this;
     }
@@ -83,15 +95,15 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final List<Integer> selectedItems = new ArrayList<>();
+                final List<String> selectedItems = new ArrayList<>();
                 AlertDialog dialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Select The Difficulty Level")
+                        .setTitle("Filter by categories")
                         .setMultiChoiceItems(categories, null, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
                                 if (isChecked) {
-                                    selectedItems.add(indexSelected);
-                                } else if (selectedItems.contains(indexSelected)) {
+                                    selectedItems.add(categories[indexSelected].toString());
+                                } else if (selectedItems.contains(categories[indexSelected].toString())) {
                                     selectedItems.remove(Integer.valueOf(indexSelected));
                                 }
                             }
@@ -99,7 +111,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 mData = new ArrayList<>();
-                                getServices(rootView);
+                                getServices(rootView, selectedItems);
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
@@ -120,12 +132,13 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         }
 
         mapView.getMapAsync(this);
-        getServices(rootView);
+        getServices(rootView, new ArrayList<String>());
         return rootView;
     }
 
-    private void getServices(final View rootView) {
-        ServiceController.serviceByMCIdRequest(getContext(), this.idMicroCity, serviceResolvedCallback);
+    private void getServices(final View rootView, List<String> selectedItems) {
+        //ServiceController.serviceByMCIdRequest(getContext(), this.idMicroCity, serviceResolvedCallback);
+        ServiceController.serviceByMCLocationAndQueryRequest(getContext(), this.idMicroCity, this.locMicroCity, selectedItems, serviceResolvedCallback);
     }
 
     @Override

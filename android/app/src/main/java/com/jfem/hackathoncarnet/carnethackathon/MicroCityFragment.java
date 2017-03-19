@@ -174,7 +174,7 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
             holder.mMicroCityViewName.setText(microCity.getName());
             holder.mMicroCityViewAddress.setText(microCity.getAddress());
             holder.mMicroCityViewDistance.setText(Utility.decimalFormat(microCityView.getDistance()) + " km");
-            holder.mMicroCityViewTime.setText(Utility.decimalFormat(microCityView.getTime()) + " m");
+            holder.mMicroCityViewTime.setText(Utility.decimalFormat(microCityView.getTime()) + " min");
             holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

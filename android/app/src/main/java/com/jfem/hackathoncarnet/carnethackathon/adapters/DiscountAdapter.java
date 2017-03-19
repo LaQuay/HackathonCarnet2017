@@ -96,7 +96,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
             final Discount cardModel = data.get(position);
             final String name = cardModel.getServiceName();
             final String microcity = cardModel.getMicrocityId() +"";
-            final String value = cardModel.getDiscount();
+            final String value = cardModel.getDiscount().replace("Euros","") + "€";
             final JSONArray categories = cardModel.getServiceCategoryName();
 
             Integer category = getCategoryColor(categories);

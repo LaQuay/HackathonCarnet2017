@@ -1,13 +1,11 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.DistanceController;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
+import com.jfem.hackathoncarnet.carnethackathon.interfaces.OnMicroCityViewAdapterClick;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
@@ -66,41 +65,10 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_venue, container, false);
+        rootView = inflater.inflate(R.layout.fragment_microcity, container, false);
 
         distanceResolvedCallback = this;
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final List<Integer> selectedItems = new ArrayList<>();
-                AlertDialog dialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Select The Difficulty Level")
-                        .setMultiChoiceItems(categories, null, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
-                                if (isChecked) {
-                                    selectedItems.add(indexSelected);
-                                } else if (selectedItems.contains(indexSelected)) {
-                                    selectedItems.remove(Integer.valueOf(indexSelected));
-                                }
-                            }
-                        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                microCityViewArray = new ArrayList<>();
-                                getServices();
-                            }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                //  Your code when user clicked on Cancel
-                            }
-                        }).create();
-                dialog.show();
-            }
-        });
         getServices();
         return rootView;
     }
@@ -113,6 +81,7 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
                 try {
                     JSONArray venuesJSON = new JSONArray(venues);
                     numDistanceInfoRequestLeft = venuesJSON.length();
+                    microCityViewArray = new ArrayList<>();
                     for (int i = 0; i < venuesJSON.length(); i++) {
                         JSONObject venueJSON = venuesJSON.getJSONObject(i);
                         MicroCity microCity = new MicroCity();
@@ -161,11 +130,21 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-            mRecyclerView.setAdapter(new MicroCityViewAdapter(microCityViewArray));
+            mRecyclerView.setAdapter(new MicroCityViewAdapter(microCityViewArray, new OnMicroCityViewAdapterClick() {
+                @Override
+                public void onItemClickListener(MicroCityView item, int position) {
+                    Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, position, item.getMicroCity().getCoordinates().getLat(), item.getMicroCity().getCoordinates().getLng());
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }));
         }
     }
 
     private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {
+        private final OnMicroCityViewAdapterClick listener;
         private List<MicroCityView> microCityViewArray;
         private Drawable[] drawables = {
                 getResources().getDrawable(R.drawable.mc_1),
@@ -174,8 +153,9 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
                 getResources().getDrawable(R.drawable.mc_4)
         };
 
-        MicroCityViewAdapter(List<MicroCityView> microCityViewArray) {
+        MicroCityViewAdapter(List<MicroCityView> microCityViewArray, OnMicroCityViewAdapterClick listener) {
             this.microCityViewArray = microCityViewArray;
+            this.listener = listener;
         }
 
         @Override
@@ -186,8 +166,8 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            MicroCityView microCityView = microCityViewArray.get(position);
+        public void onBindViewHolder(ViewHolder holder, final int position) {
+            final MicroCityView microCityView = microCityViewArray.get(position);
             MicroCity microCity = microCityView.getMicroCity();
 
             holder.mMicroCityViewCover.setImageDrawable(drawables[microCity.getId() - 1]);
@@ -195,6 +175,14 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
             holder.mMicroCityViewAddress.setText(microCity.getAddress());
             holder.mMicroCityViewDistance.setText(Utility.decimalFormat(microCityView.getDistance()) + " km");
             holder.mMicroCityViewTime.setText(Utility.decimalFormat(microCityView.getTime()) + " m");
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onItemClickListener(microCityView, position);
+                    }
+                }
+            });
         }
 
         @Override
@@ -203,6 +191,7 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
+            private CardView mCardView;
             private ImageView mMicroCityViewCover;
             private TextView mMicroCityViewName;
             private TextView mMicroCityViewAddress;
@@ -211,6 +200,7 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
 
             ViewHolder(View itemView) {
                 super(itemView);
+                mCardView = (CardView) itemView.findViewById(R.id.fragment_microcity_shopping_cardview);
                 mMicroCityViewCover = (ImageView) itemView.findViewById(R.id.fragment_microcity_cover_image);
                 mMicroCityViewName = (TextView) itemView.findViewById(R.id.fragment_microcity_name_text);
                 mMicroCityViewAddress = (TextView) itemView.findViewById(R.id.fragment_microcity_address_text);

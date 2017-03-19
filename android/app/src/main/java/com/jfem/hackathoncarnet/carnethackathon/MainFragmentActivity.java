@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -270,9 +269,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     builder.setMessage("Do you want to see the available services?");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();
-
-                            //TODO Change valid ID
                             Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, selMCId, selMCLoc.latitude, selMCLoc.longitude);
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)

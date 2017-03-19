@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MicroCityInfoFragment extends Fragment implements ServiceController.ServiceResolvedCallback,
-        OnMapReadyCallback {
+        OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
@@ -163,6 +163,8 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
 
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+
+        mMap.setOnMarkerClickListener(this);
     }
 
     private void addServicesMarkers(ArrayList<Service> services) {
@@ -176,7 +178,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
                             .position(new LatLng(currentService.getLocation().getDouble("lat"), currentService.getLocation().getDouble("lng")))
                             .title(currentService.getName())
                     );
-
+                marker.setTag(i);
                 marker.setAlpha(0.7f);
                 servicesMarkers.add(marker);
             }
@@ -197,5 +199,28 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         int padding = 0; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
         mMap.animateCamera(cu);
+    }
+
+    private void focusOnMarker(Marker marker) {
+        marker.showInfoWindow();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom));
+    }
+
+
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        Log.e(TAG, "CLICK");
+        if (servicesMarkers != null) {
+            for (int i = 0; i < servicesMarkers.size(); ++i) {
+                if (servicesMarkers.get(i).getTag() == marker.getTag()) {
+                    //TODO Open dialog with info instead of going
+                    focusOnMarker(servicesMarkers.get(i));
+                    break;
+                }
+            }
+        }
+
+        return true;
     }
 }

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -19,7 +20,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jfem.hackathoncarnet.carnethackathon.MainActivity;
 import com.jfem.hackathoncarnet.carnethackathon.R;
+import com.jfem.hackathoncarnet.carnethackathon.VenueFragment;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.ImageController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
 import org.json.JSONArray;
@@ -29,9 +33,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> {
-
-    private List<Venue> data;
-    private Context context;
 
     private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
     private final static int[] colors = {
@@ -43,11 +44,15 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             Color.parseColor("#EEABCA"),
             Color.parseColor("#F4828C")
     };
+    private final OnItemClickListener listener;
+    private List<Venue> data;
+    private Context context;
     private Drawable[] icons;
 
-    public VenueAdapter(List<Venue> data, Context context) {
+    public VenueAdapter(List<Venue> data, Context context, OnItemClickListener listener) {
         this.data = data;
         this.context = context;
+        this.listener = listener;
         icons = new Drawable[]{
                 context.getResources().getDrawable(R.drawable.ic_restaurant),
                 context.getResources().getDrawable(R.drawable.ic_music_note),
@@ -88,7 +93,6 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
@@ -108,6 +112,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             holder.mVenueDistance.setText(distance);
             holder.mVenueCategory.setImageDrawable(icons[category]);
             holder.mVenueHeader.setBackgroundColor(colors[category]);
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(cardModel);
+                }
+            });
+
             holder.mCardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -124,9 +135,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
                                             if (dialog.getWindow() != null) {
                                                 dialog.getWindow().setLayout(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.FILL_PARENT);
                                             }
+
+                                            ImageView mHeader = (ImageView) dialog.findViewById(R.id.info_image);
                                             TextView mPhone = (TextView) dialog.findViewById(R.id.info_phone);
                                             TextView mUrl = (TextView) dialog.findViewById(R.id.info_url);
                                             TextView mAddress = (TextView) dialog.findViewById(R.id.info_address);
+
+                                            ImageController.venueImageRequest(VenueAdapter.this.context, cardModel.getId(), mHeader);
 
                                             mUrl.setText(cardModel.getUrl());
 
@@ -151,6 +166,10 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Venue item);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

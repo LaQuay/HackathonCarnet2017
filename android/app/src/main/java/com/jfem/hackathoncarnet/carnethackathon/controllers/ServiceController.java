@@ -107,7 +107,7 @@ public class ServiceController {
     }
 
     private static ArrayList<Service> parseServiceJSONArray(JSONArray serviceJSONArray) {
-        ArrayList<Service> serviceArray = new ArrayList<Service>();
+        ArrayList<Service> serviceArray = new ArrayList<>();
 
         try {
             for (int i = 0; i < serviceJSONArray.length(); i++) {

@@ -142,7 +142,8 @@ public class MicroCityFragment extends Fragment {
         private Drawable[] drawables = {
                 getResources().getDrawable(R.drawable.mc_1),
                 getResources().getDrawable(R.drawable.mc_2),
-                getResources().getDrawable(R.drawable.mc_3)
+                getResources().getDrawable(R.drawable.mc_3),
+                getResources().getDrawable(R.drawable.mc_4)
         };
 
         MicroCityViewAdapter(List<MicroCityView> data) {

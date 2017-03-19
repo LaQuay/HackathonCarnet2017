@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -291,7 +292,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 TextView cityNumberText = (TextView) mcView.findViewById(R.id.item_microcity_number_text);
                 TextView cityTimeText = (TextView) mcView.findViewById(R.id.item_microcity_time_text);
                 TextView cityKmText = (TextView) mcView.findViewById(R.id.item_microcity_distance_text);
-                Button cityServicesButton = (Button) mcView.findViewById(R.id.item_microcity_services_button);
+                ImageButton cityServicesButton = (ImageButton) mcView.findViewById(R.id.item_microcity_services_button);
 
                 cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
                 cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());

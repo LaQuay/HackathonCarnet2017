@@ -17,12 +17,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.adapters.VenueAdapter;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
@@ -46,6 +54,8 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private List<Venue> mData;
     private int idMicroCity;
+
+    private ArrayList<Marker> servicesMarkers;
 
     private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
@@ -143,6 +153,8 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_mc_info_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(new VenueAdapter(mData, getContext()));
+
+        addServicesMarkers(serviceArray);
     }
 
     @Override
@@ -151,5 +163,39 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
 
         //mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setMapToolbarEnabled(false);
+    }
+
+    private void addServicesMarkers(ArrayList<Service> services) {
+        try {
+            servicesMarkers = new ArrayList<Marker>();
+            for (int i = 0; i < services.size(); ++i) {
+                Service currentService = services.get(i);
+
+                final Marker marker;
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(currentService.getLocation().getDouble("lat"), currentService.getLocation().getDouble("lng")))
+                            .title(currentService.getName())
+                    );
+
+                marker.setAlpha(0.7f);
+                servicesMarkers.add(marker);
+            }
+
+            moveCameraToShowAllMarkers();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void moveCameraToShowAllMarkers() {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : servicesMarkers) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+        int padding = 0; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        mMap.animateCamera(cu);
     }
 }

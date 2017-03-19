@@ -86,7 +86,7 @@ module.exports = function (app) {
 
     function treatError(err) {
         if (err) {
-            console.log(err.errorType);
+            console.log(err);
             if (err.errorType === 'param_error') return 400;
             else if (err.errorType === 'invalid_auth') return 403;
             else return 500;

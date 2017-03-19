@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -20,9 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.jfem.hackathoncarnet.carnethackathon.MainActivity;
 import com.jfem.hackathoncarnet.carnethackathon.R;
-import com.jfem.hackathoncarnet.carnethackathon.VenueFragment;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ImageController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
@@ -112,12 +109,14 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             holder.mVenueDistance.setText(distance);
             holder.mVenueCategory.setImageDrawable(icons[category]);
             holder.mVenueHeader.setBackgroundColor(colors[category]);
-            holder.mCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClick(cardModel);
-                }
-            });
+                holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (listener != null) {
+                            listener.onItemClick(cardModel);
+                        }
+                    }
+                });
 
             holder.mCardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -143,7 +142,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
 
                                             ImageController.venueImageRequest(VenueAdapter.this.context, cardModel.getId(), mHeader);
 
-                                            mUrl.setText(cardModel.getUrl());
+                                            try {
+                                                mAddress.setText(cardModel.getLocation().getString("address"));
+                                                mUrl.setText(cardModel.getUrl());
+                                                mPhone.setText(cardModel.getContact().has("phone") ? cardModel.getContact().getString("phone") : "-");
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
 
                                             dialog.show();
                                             break;

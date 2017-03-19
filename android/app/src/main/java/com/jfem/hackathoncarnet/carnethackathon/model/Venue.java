@@ -10,6 +10,7 @@ public class Venue {
     private String id;
     private String name;
     private JSONObject location;
+    private JSONObject contact;
     private JSONArray categories;
     private String url;
 
@@ -51,5 +52,13 @@ public class Venue {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public JSONObject getContact() {
+        return contact;
+    }
+
+    public void setContact(JSONObject contact) {
+        this.contact = contact;
     }
 }

@@ -34,7 +34,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-smallcaps"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/fragment_microcity_address_text"

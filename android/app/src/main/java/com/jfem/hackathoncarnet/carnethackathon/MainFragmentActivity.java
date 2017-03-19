@@ -133,7 +133,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     public void setUserLocation(Location location) {
-        locationText.setText(location.getLatitude() + ", " + location.getLongitude());
+        locationText.setText(Html.fromHtml("<b>Your location: </b>" + location.getLatitude() + ", " + location.getLongitude()));
 
         addMarkerUserLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
@@ -183,7 +183,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             for (int i = 0; i < microCityMarkerArray.size(); ++i) {
                 if (microCityMarkerArray.get(i).getMarker().getTag() == marker.getTag()) {
                     //TODO Open dialog with info instead of going
-                    MicroCityView microCityMarkerClicked = microCityMarkerArray.get(i);
+                    focusOnMarker(microCityMarkerArray.get(i).getMarker());
                     break;
                 }
             }
@@ -207,17 +207,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         numDistanceInfoRequestLeft = microCities.size();
 
         for (int i = 0; i < microCities.size(); ++i) {
-            Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
-            bitmapMarker = Utility.addTextToBitmap(getContext(), "" + (i + 1), bitmapMarker);
-
             MicroCity currentMicroCity = microCities.get(i);
 
             final Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(microCities.get(i).getCoordinates().getLat(), microCities.get(i).getCoordinates().getLng()))
                     .title(microCities.get(i).getName())
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmapMarker))
             );
-            marker.setTag(i);
             marker.setAlpha(0.7f);
 
             microCityMarkerArray.add(new MicroCityView(currentMicroCity, marker));
@@ -306,6 +301,11 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
                 cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
 
+                Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
+                bitmapMarker = Utility.addTextToBitmap(getContext(), "" + (i + 1), bitmapMarker);
+                microCityMarkerArray.get(i).getMarker().setIcon(BitmapDescriptorFactory.fromBitmap(bitmapMarker));
+                microCityMarkerArray.get(i).getMarker().setTag(i);
+
                 final int mcid = i;
                 mcView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -343,14 +343,18 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         builder.setTitle("Services in " + microCityMarkerArray.get(mcid).getMicroCity().getName());
                         builder.setCancelable(true);
 
-                        //String servicesStr = "No available services";
-                        //builder.setMessage(servicesStr);
-                        //builder.show();
-
-                        //Location loc = new Location("pp");//provider name is unnecessary
-                        //loc.setLatitude(microCityMarkerArray.get(mcid).getMarker().getPosition().latitude);//your coords of course
-                        //loc.setLongitude(microCityMarkerArray.get(mcid).getMarker().getPosition().longitude);
-                        ServiceController.serviceRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
+                        if (microCityMarkerArray.get(mcid).getMicroCity().getId() == null) {
+                            Location loc = new Location("pp");
+                            loc.setLatitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLat());
+                            loc.setLongitude(microCityMarkerArray.get(mcid).getMicroCity().getCoordinates().getLng());
+                            ServiceController.serviceByMCLocationRequest(getContext(), loc, builder, serviceResolvedCallback);
+                            //String servicesStr = "No available services";
+                            //builder.setMessage(servicesStr);
+                            //builder.show();
+                        }
+                        else {
+                            ServiceController.serviceByMCIdRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
+                        }
                     }
                 });
 

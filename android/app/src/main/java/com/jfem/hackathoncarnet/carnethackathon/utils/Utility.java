@@ -14,6 +14,8 @@ import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by LaQuay on 18/03/2017.
  */
@@ -46,6 +48,11 @@ public class Utility {
         canvas.drawText(textToAdd, x - 2, y - 12, paint);
 
         return bitmap;
+    }
+
+    public static String decimalFormat(double number) {
+        DecimalFormat df = new DecimalFormat("0.0");
+        return df.format(number);
     }
 
     public static Snackbar showSnackBar(View view, String text, String actionText, View.OnClickListener onClickListener) {

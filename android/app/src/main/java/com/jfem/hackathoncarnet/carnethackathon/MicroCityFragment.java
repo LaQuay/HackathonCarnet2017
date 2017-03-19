@@ -3,6 +3,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -22,8 +23,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.DistanceController;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.LocationController;
+import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
+import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
+import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,13 +38,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroCityFragment extends Fragment {
+public class MicroCityFragment extends Fragment implements DistanceController.DistanceResolvedCallback {
     public final static String TAG = MicroCityFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
-
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
-    private List<MicroCityView> mData;
+    private View rootView;
+    private List<MicroCityView> microCityViewArray;
+    private Location location;
+    private DistanceController.DistanceResolvedCallback distanceResolvedCallback;
+    private int numDistanceInfoRequestLeft;
 
     public static MicroCityFragment newInstance(int position) {
         MicroCityFragment fragment = new MicroCityFragment();
@@ -51,12 +60,15 @@ public class MicroCityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mData = new ArrayList<>();
+        microCityViewArray = new ArrayList<>();
+        location = LocationController.getInstance(getContext()).getLastLocation();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_venue, container, false);
+        rootView = inflater.inflate(R.layout.fragment_venue, container, false);
+
+        distanceResolvedCallback = this;
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -77,8 +89,8 @@ public class MicroCityFragment extends Fragment {
                         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                mData = new ArrayList<>();
-                                getServices(rootView);
+                                microCityViewArray = new ArrayList<>();
+                                getServices();
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
@@ -89,33 +101,34 @@ public class MicroCityFragment extends Fragment {
                 dialog.show();
             }
         });
-        getServices(rootView);
+        getServices();
         return rootView;
     }
 
-    private void getServices(final View rootView) {
+    private void getServices() {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, API_BASE, new Response.Listener<String>() {
             @Override
             public void onResponse(String venues) {
                 try {
                     JSONArray venuesJSON = new JSONArray(venues);
+                    numDistanceInfoRequestLeft = venuesJSON.length();
                     for (int i = 0; i < venuesJSON.length(); i++) {
                         JSONObject venueJSON = venuesJSON.getJSONObject(i);
                         MicroCity microCity = new MicroCity();
                         microCity.setId(venueJSON.getInt("id"));
                         microCity.setName(venueJSON.getString("name"));
                         microCity.setAddress(venueJSON.getString("address"));
+                        JSONObject coordinatesJSON = venueJSON.getJSONObject("coordinates");
+                        microCity.setCoordinates(new Coordinates(coordinatesJSON.getDouble("lat"), coordinatesJSON.getDouble("lng")));
 
                         MicroCityView microCityView = new MicroCityView(microCity, null);
                         microCityView.setDistance(1d);
                         microCityView.setTime(1d);
-                        mData.add(microCityView);
-                    }
+                        microCityViewArray.add(microCityView);
 
-                    RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    mRecyclerView.setAdapter(new MicroCityViewAdapter(mData));
+                        DistanceController.distanceRequest(getContext(), location, microCityView, distanceResolvedCallback);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -137,8 +150,21 @@ public class MicroCityFragment extends Fragment {
         ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
+    @Override
+    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityView) {
+        microCityView.setDistance(distanceProperties.getDistance());
+        microCityView.setTime(distanceProperties.getTime());
+
+        --numDistanceInfoRequestLeft;
+        if (this.numDistanceInfoRequestLeft == 0) {
+            RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+            mRecyclerView.setAdapter(new MicroCityViewAdapter(microCityViewArray));
+        }
+    }
+
     private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {
-        private List<MicroCityView> data;
+        private List<MicroCityView> microCityViewArray;
         private Drawable[] drawables = {
                 getResources().getDrawable(R.drawable.mc_1),
                 getResources().getDrawable(R.drawable.mc_2),
@@ -146,8 +172,8 @@ public class MicroCityFragment extends Fragment {
                 getResources().getDrawable(R.drawable.mc_4)
         };
 
-        MicroCityViewAdapter(List<MicroCityView> data) {
-            this.data = data;
+        MicroCityViewAdapter(List<MicroCityView> microCityViewArray) {
+            this.microCityViewArray = microCityViewArray;
         }
 
         @Override
@@ -159,19 +185,19 @@ public class MicroCityFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            MicroCityView microCityView = data.get(position);
+            MicroCityView microCityView = microCityViewArray.get(position);
             MicroCity microCity = microCityView.getMicroCity();
 
             holder.mMicroCityViewCover.setImageDrawable(drawables[microCity.getId() - 1]);
             holder.mMicroCityViewName.setText(microCity.getName());
             holder.mMicroCityViewAddress.setText(microCity.getAddress());
-            holder.mMicroCityViewDistance.setText(microCityView.getDistance() + " km");
-            holder.mMicroCityViewTime.setText(microCityView.getTime() + " m");
+            holder.mMicroCityViewDistance.setText(Utility.decimalFormat(microCityView.getDistance()) + " km");
+            holder.mMicroCityViewTime.setText(Utility.decimalFormat(microCityView.getTime()) + " m");
         }
 
         @Override
         public int getItemCount() {
-            return data.size();
+            return microCityViewArray.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {

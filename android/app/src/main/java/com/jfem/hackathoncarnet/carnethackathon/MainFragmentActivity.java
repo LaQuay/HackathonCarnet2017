@@ -43,7 +43,6 @@ import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
 import org.json.JSONArray;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -309,7 +308,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 }
             });
 
-            DecimalFormat df = new DecimalFormat("0.0");
             for (int i = 0; i < microCityMarkerArray.size(); ++i) {
                 View mcView = inflater.inflate(R.layout.item_microcity_main_fragment, null);
 
@@ -323,8 +321,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 cityNameText.setText(microCityMarkerArray.get(i).getMicroCity().getName());
                 cityAddressText.setText(microCityMarkerArray.get(i).getMicroCity().getAddress());
                 cityNumberText.setText("" + (i + 1));
-                cityTimeText.setText(df.format(microCityMarkerArray.get(i).getTime()) + " min");
-                cityKmText.setText(df.format(microCityMarkerArray.get(i).getDistance()) + " km");
+                cityTimeText.setText(Utility.decimalFormat(microCityMarkerArray.get(i).getTime()) + " min");
+                cityKmText.setText(Utility.decimalFormat(microCityMarkerArray.get(i).getDistance()) + " km");
 
                 Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.icon_marker_microcity, 100, 100);
                 bitmapMarker = Utility.addTextToBitmap(getContext(), "" + (i + 1), bitmapMarker);

@@ -20,13 +20,13 @@ public class DistanceController {
     private static final String TAG = DistanceController.class.getSimpleName();
 
     public static void distanceRequest(Context context, Location baseLocation, final MicroCityView microCityMarker, final DistanceController.DistanceResolvedCallback distanceResolvedCallback) {
-        double markerLat = microCityMarker.getMarker().getPosition().latitude;
-        double markerLon = microCityMarker.getMarker().getPosition().longitude;
+        double destinationLat = microCityMarker.getMicroCity().getCoordinates().getLat();
+        double destinationLng = microCityMarker.getMicroCity().getCoordinates().getLng();
 
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s,%s&destinations=%s,%s&key=%s";
 
         url = String.format(url, baseLocation.getLatitude(), baseLocation.getLongitude(),
-                markerLat, markerLon, context.getResources().getString(R.string.google_maps_key));
+                destinationLat, destinationLng, context.getResources().getString(R.string.google_maps_key));
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,

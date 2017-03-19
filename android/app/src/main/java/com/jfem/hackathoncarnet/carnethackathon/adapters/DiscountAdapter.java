@@ -1,28 +1,18 @@
 package com.jfem.hackathoncarnet.carnethackathon.adapters;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jfem.hackathoncarnet.carnethackathon.R;
-import com.jfem.hackathoncarnet.carnethackathon.controllers.ImageController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Discount;
-import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +76,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_discount_fragment, parent, false);
+                .inflate(R.layout.item_microcity_discount_fragment, parent, false);
         return new DiscountAdapter.ViewHolder(view);
     }
 

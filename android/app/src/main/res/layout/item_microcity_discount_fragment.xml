@@ -4,6 +4,7 @@
     android:id="@+id/fragment_discount_cardview"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     app:cardCornerRadius="4dp"
     app:cardElevation="2dp"
     app:cardUseCompatPadding="true">
@@ -40,7 +41,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Gran Via 2 A" />
-
         </LinearLayout>
 
         <TextView

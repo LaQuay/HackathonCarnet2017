@@ -93,7 +93,7 @@ public class MicroCityInfoFragment extends Fragment {
                 dialog.show();
             }
         });
-        //getServices(rootView);
+        getServices(rootView);
         return rootView;
     }
 

@@ -68,9 +68,11 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Snackbar snackBar;
 
     private ArrayList<MicroCityView> microCityMarkerArray = null;
-    private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
     private int numDistanceInfoRequestLeft;
+
+    private LatLng selectedMCLatLng = null;
+    private Integer selectedMCId = -1;
 
     private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
@@ -237,7 +239,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     }
 
     private void startNavigationToDestination(LatLng latlng) {
-        this.endPointLatLng = latlng;
+        this.selectedMCLatLng = latlng;
         String newPosition = latlng.latitude + "," + latlng.longitude;
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -251,8 +253,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 if (resultCode == RESULT_OK) Log.e(TAG, "Navigation ok");
                 else if (resultCode == RESULT_CANCELED) Log.e(TAG, "Navigation canceled");
 
-                double dist = Utility.distanceBetween2LatLng(this.endPointLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
+                double dist = Utility.distanceBetween2LatLng(this.selectedMCLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
                 if (dist < 100000) {
+                    final Integer selMCId = this.selectedMCId;
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);
@@ -262,7 +265,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                             Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();
 
                             //TODO Change valid ID
-                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, 1);
+                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, selMCId);
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
                                     .addToBackStack(null)

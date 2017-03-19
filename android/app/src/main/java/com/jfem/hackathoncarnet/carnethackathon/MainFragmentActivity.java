@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,8 +49,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-        LocationController.OnLocationChangedListener, MicroCityController.MicroCityResolvedCallback,
-        DistanceController.DistanceResolvedCallback, ServiceController.ServiceResolvedCallback {
+        MicroCityController.MicroCityResolvedCallback, DistanceController.DistanceResolvedCallback, ServiceController.ServiceResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
@@ -65,7 +63,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Location location;
     private Snackbar snackBar;
 
-    private MicroCityController microCityController;
     private ArrayList<MicroCityMarker> microCityMarkerArray = null;
     private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
@@ -102,12 +99,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
         serviceResolvedCallback = this;
 
-        //Getting location of user
-        startLocation();
-
-        //Getting all micro cities available
-        MicroCityController.microCityRequest(getContext(), this);
-
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {
@@ -127,12 +118,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }*/
 
         return rootView;
-
-    }
-
-    private void startLocation() {
-        snackBar = Utility.showSnackBar(baseSnackBarView, "Finding your position...", "action", null);
-        LocationController.getInstance(getContext().getApplicationContext()).startLocation(this);
     }
 
     private void setUpElements() {
@@ -145,7 +130,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     }
 
-    public void setLocationReceived(Location location) {
+    public void setUserLocation(Location location) {
         locationText.setText(location.getLatitude() + ", " + location.getLongitude());
 
         addMarkerUserLocation(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -181,6 +166,13 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
         mMap.setOnMarkerClickListener(this);
+
+        //Getting location of user
+        location = LocationController.getInstance(getContext().getApplicationContext()).getLastLocation();
+        setUserLocation(location);
+
+        //Getting all micro cities available
+        MicroCityController.microCityRequest(getContext(), this);
     }
 
     @Override
@@ -196,17 +188,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
 
         return true;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.e(TAG, "New Location received" + location.getLatitude() + ", " + location.getLongitude());
-        if (this.location == null) {
-            Utility.closeSnackBar(snackBar);
-        }
-        this.location = location;
-
-        setLocationReceived(location);
     }
 
     public void onMicroCityResolved(ArrayList<MicroCity> microCities) {
@@ -276,7 +257,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                     builder.setNegativeButton("Cancel", null);
                     builder.show();
                 }
-
                 break;
         }
     }

@@ -17,6 +17,27 @@ module.exports = function (app) {
             }
         });
     });
+    /*
+     app.get('/bigiot/access/promotions', function (req, res) {
+     fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
+     const status = treatError(err);
+     if (status === 200) {
+     fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
+     const status = treatError(err);
+     if (status === 200) {
+     const promotions=JSON.parse(dataPromotions.toString());
+     let returnedPromotions[];
+     promotions.forEach();
+     res.json(JSON.parse(dataPromotions.toString()));
+     } else {
+     res.sendStatus(status);
+     }
+     });
+     } else {
+     res.sendStatus(status);
+     }
+     });
+     });*/
 
     app.get('/bigiot/access/microcities/:id/services', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
@@ -25,7 +46,9 @@ module.exports = function (app) {
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(data.toString());
 
-                if (microCityID < 0 || microCityID >= microCities.length) return res.sendStatus(400);
+                if (microCityID < 0 || microCityID >= microCities.length || microCities[microCityID] === undefined) {
+                    return res.sendStatus(400);
+                }
 
                 const params = {
                     ll: microCities[microCityID].coordinates.lat + ',' + microCities[microCityID].coordinates.lng,

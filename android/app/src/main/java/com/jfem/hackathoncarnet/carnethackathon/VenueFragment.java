@@ -125,7 +125,7 @@ public class VenueFragment extends Fragment {
                         venue.setName(venueJSON.getString("name"));
                         venue.setLocation(venueJSON.getJSONObject("location"));
                         venue.setCategories(venueJSON.getJSONArray("categories"));
-                        venue.setUrl(venueJSON.getString("url"));
+                        venue.setUrl(venueJSON.has("url") ? venueJSON.getString("url") : "-");
                         venue.setContact(venueJSON.getJSONObject("contact"));
                         mData.add(venue);
                     }

@@ -109,14 +109,14 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             holder.mVenueDistance.setText(distance);
             holder.mVenueCategory.setImageDrawable(icons[category]);
             holder.mVenueHeader.setBackgroundColor(colors[category]);
-                holder.mCardView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (listener != null) {
-                            listener.onItemClick(cardModel);
-                        }
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onItemClick(cardModel);
                     }
-                });
+                }
+            });
 
             holder.mCardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

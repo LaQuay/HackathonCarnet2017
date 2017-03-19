@@ -140,6 +140,20 @@ module.exports = function (app) {
         });
     });
 
+    app.get('/bigiot/access/services/:id/photos', function (req, res) {
+        const params = {
+            venue_id: req.params.id + '/photos'
+        };
+        foursquare.getVenue(params, function (err, results) {
+            const status = treatError(err);
+            if (status === 200) {
+                res.json(results.response.photos.items[0]);
+            } else {
+                res.sendStatus(status);
+            }
+        });
+    });
+
     /*---- Auxiliary functions ----*/
 
     function buildFilteredVenues(venues) {

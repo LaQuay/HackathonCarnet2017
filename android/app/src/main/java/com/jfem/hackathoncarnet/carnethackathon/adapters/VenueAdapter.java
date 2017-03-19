@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -18,7 +19,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.jfem.hackathoncarnet.carnethackathon.MainActivity;
 import com.jfem.hackathoncarnet.carnethackathon.R;
+import com.jfem.hackathoncarnet.carnethackathon.VenueFragment;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.ImageController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
 import org.json.JSONArray;
@@ -128,9 +132,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
                                             if (dialog.getWindow() != null) {
                                                 dialog.getWindow().setLayout(RecyclerView.LayoutParams.FILL_PARENT, RecyclerView.LayoutParams.FILL_PARENT);
                                             }
+
+                                            ImageView mHeader = (ImageView) dialog.findViewById(R.id.info_image);
                                             TextView mPhone = (TextView) dialog.findViewById(R.id.info_phone);
                                             TextView mUrl = (TextView) dialog.findViewById(R.id.info_url);
                                             TextView mAddress = (TextView) dialog.findViewById(R.id.info_address);
+
+                                            ImageController.venueImageRequest(VenueAdapter.this.context, cardModel.getId(), mHeader);
 
                                             mUrl.setText(cardModel.getUrl());
 

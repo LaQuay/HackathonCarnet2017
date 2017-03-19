@@ -46,7 +46,7 @@ module.exports = function (app) {
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(data.toString());
 
-                if (microCityID < 0 || microCityID >= microCities.length || microCityID === null || microCityID === undefined) {
+                if (microCityID < 0 || microCityID >= microCities.length || microCities[microCityID] === undefined) {
                     return res.sendStatus(400);
                 }
 

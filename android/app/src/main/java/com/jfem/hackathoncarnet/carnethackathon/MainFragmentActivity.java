@@ -121,6 +121,15 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         };
         handler.postDelayed(r, 250);
 
+        // TODO: delete this
+        /*
+        Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, 1);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
+                .addToBackStack(null)
+                .commit();
+                */
+
         /*try {
             MicroCityConsumerBigIot.getMicrocities();
         } catch (InterruptedException | ExecutionException | IOException | AccessToNonSubscribedOfferingException | IncompleteOfferingQueryException e) {

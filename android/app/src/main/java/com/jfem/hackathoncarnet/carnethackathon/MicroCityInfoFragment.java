@@ -17,6 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
@@ -26,13 +30,17 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroCityInfoFragment extends Fragment implements ServiceController.ServiceResolvedCallback {
+public class MicroCityInfoFragment extends Fragment implements ServiceController.ServiceResolvedCallback,
+        OnMapReadyCallback {
     public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
     private final static String API_BASE = "";
 
     private View rootView;
+    private MapView mapView;
+    private GoogleMap mMap;
+    private TextView locationText;
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private List<Venue> mData;
@@ -62,6 +70,8 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_microcity_info, container, false);
+        mapView = (MapView) rootView.findViewById(R.id.fragment_mc_info_map_google);
+        locationText = (TextView) rootView.findViewById(R.id.fragment_mc_info_your_location_text);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +104,16 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
                 dialog.show();
             }
         });
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mapView.getMapAsync(this);
         getServices(rootView);
         return rootView;
     }
@@ -119,9 +139,17 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
             venue.setCategories(serviceArray.get(i).getCategories());
             mData.add(venue);
         }
-        RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_mc_info_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(new VenueViewAdapter(mData));
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        //mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     private class VenueViewAdapter extends RecyclerView.Adapter<VenueViewAdapter.ViewHolder> {

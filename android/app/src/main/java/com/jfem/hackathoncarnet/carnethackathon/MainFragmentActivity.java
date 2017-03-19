@@ -238,8 +238,9 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
     }
 
-    private void startNavigationToDestination(LatLng latlng) {
+    private void startNavigationToDestination(LatLng latlng, Integer mcId) {
         this.selectedMCLatLng = latlng;
+        this.selectedMCId = mcId;
         String newPosition = latlng.latitude + "," + latlng.longitude;
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + newPosition);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -256,6 +257,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 double dist = Utility.distanceBetween2LatLng(this.selectedMCLatLng, new LatLng(this.location.getLatitude(), this.location.getLongitude()));
                 if (dist < 100000) {
                     final Integer selMCId = this.selectedMCId;
+                    Log.e(TAG, "ID-MC: " + selMCId);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);
@@ -340,7 +342,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                             public void onClick(DialogInterface dialog, int id) {
                                 startNavigationToDestination(new LatLng(
                                         microCityMarkerArray.get(mcid).getMarker().getPosition().latitude,
-                                        microCityMarkerArray.get(mcid).getMarker().getPosition().longitude));
+                                        microCityMarkerArray.get(mcid).getMarker().getPosition().longitude),
+                                        microCityMarkerArray.get(mcid).getMicroCity().getId());
                             }
                         });
                         builder.setNegativeButton("No", null);
@@ -398,7 +401,8 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         builder.setMessage(Html.fromHtml(mss));
         builder.setPositiveButton("Navigate", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                startNavigationToDestination(microCityMarkerArray.get(idMicroCity).getMicroCity().getCoordinates().getLatLng());
+                startNavigationToDestination(microCityMarkerArray.get(idMicroCity).getMicroCity().getCoordinates().getLatLng(),
+                        microCityMarkerArray.get(idMicroCity).getMicroCity().getId());
             }
         });
         builder.setNegativeButton("Cancel", null);

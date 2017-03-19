@@ -2,45 +2,43 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
+import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
+import com.jfem.hackathoncarnet.carnethackathon.model.Service;
+import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroCityInfoFragment extends Fragment {
+public class MicroCityInfoFragment extends Fragment implements ServiceController.ServiceResolvedCallback {
     public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
     private final static String API_BASE = "";
 
+    private View rootView;
+
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
-    private List<MicroCityView> mData;
+    private List<Venue> mData;
     private int idMicroCity;
+
+    private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
     public static MicroCityInfoFragment newInstance(int position, int idMicroCity) {
         MicroCityInfoFragment fragment = new MicroCityInfoFragment();
@@ -56,11 +54,14 @@ public class MicroCityInfoFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mData = new ArrayList<>();
         this.idMicroCity = getArguments().getInt(ARG_ID_MICROCITY);
+        Log.e(TAG, "ID-MC: " + this.idMicroCity);
+
+        serviceResolvedCallback = this;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_microcity_info, container, false);
+        rootView = inflater.inflate(R.layout.fragment_microcity_info, container, false);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -98,39 +99,7 @@ public class MicroCityInfoFragment extends Fragment {
     }
 
     private void getServices(final View rootView) {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, API_BASE, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String venues) {
-                try {
-                    JSONArray venuesJSON = new JSONArray(venues);
-                    for (int i = 0; i < venuesJSON.length(); i++) {
-                        JSONObject venueJSON = venuesJSON.getJSONObject(i);
-                        MicroCity microCity = new MicroCity();
-                        microCity.setId(venueJSON.getInt("id"));
-                        microCity.setName(venueJSON.getString("name"));
-                        microCity.setAddress(venueJSON.getString("address"));
-
-                        MicroCityView microCityView = new MicroCityView(microCity, null);
-                        microCityView.setDistance(1d);
-                        microCityView.setTime(1d);
-                        mData.add(microCityView);
-                    }
-
-                    RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    mRecyclerView.setAdapter(new MicroCityViewAdapter(mData));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
-        queue.add(stringRequest);
+        ServiceController.serviceByMCIdRequest(getContext(), this.idMicroCity, serviceResolvedCallback);
     }
 
     @Override
@@ -140,36 +109,60 @@ public class MicroCityInfoFragment extends Fragment {
         ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {
+    @Override
+    public void onServiceResolved(Integer idMicroCity, ArrayList<Service> serviceArray) {
+        for (int i = 0; i < serviceArray.size(); ++i) {
+            Venue venue = new Venue();
+            venue.setId(serviceArray.get(i).getId());
+            venue.setName(serviceArray.get(i).getName());
+            venue.setLocation(serviceArray.get(i).getLocation());
+            venue.setCategories(serviceArray.get(i).getCategories());
+            mData.add(venue);
+        }
+        RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setAdapter(new VenueViewAdapter(mData));
+    }
 
-        private List<MicroCityView> data;
-        private Drawable[] drawables = {
-                getResources().getDrawable(R.drawable.mc_1),
-                getResources().getDrawable(R.drawable.mc_2),
-                getResources().getDrawable(R.drawable.mc_3)
-        };
+    private class VenueViewAdapter extends RecyclerView.Adapter<VenueViewAdapter.ViewHolder> {
 
-        MicroCityViewAdapter(List<MicroCityView> data) {
+        private List<Venue> data;
+
+        VenueViewAdapter(List<Venue> data) {
             this.data = data;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_microcity_microcity_fragment, parent, false);
+                    .inflate(R.layout.item_microcity_venue_fragment, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            MicroCityView microCityView = data.get(position);
-            MicroCity microCity = microCityView.getMicroCity();
+            try {
+                Venue cardModel = data.get(position);
+                final String name = cardModel.getName();
+                final String address = cardModel.getLocation().getString("address");
+                final String distance = cardModel.getLocation().getString("distance") + "m";
+                final String coordinates = cardModel.getLocation().getString("lat") + "," + cardModel.getLocation().getString("lng");
 
-            holder.mMicroCityViewCover.setImageDrawable(drawables[microCity.getId() - 1]);
-            holder.mMicroCityViewName.setText(microCity.getName());
-            holder.mMicroCityViewAddress.setText(microCity.getAddress());
-            holder.mMicroCityViewDistance.setText(microCityView.getDistance() + " km");
-            holder.mMicroCityViewTime.setText(microCityView.getTime() + " m");
+                holder.mVenueName.setText(name);
+                holder.mVenueAddress.setText(address);
+                holder.mVenueDistance.setText(distance);
+                holder.mVenueMaps.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Uri gmmIntentUri = Uri.parse("geo:" + coordinates);
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+                        startActivity(mapIntent);
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -178,19 +171,15 @@ public class MicroCityInfoFragment extends Fragment {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            private ImageView mMicroCityViewCover;
-            private TextView mMicroCityViewName;
-            private TextView mMicroCityViewAddress;
-            private TextView mMicroCityViewDistance;
-            private TextView mMicroCityViewTime;
+            private TextView mVenueName, mVenueAddress, mVenueDistance;
+            private ImageView mVenueMaps;
 
             ViewHolder(View itemView) {
                 super(itemView);
-                mMicroCityViewCover = (ImageView) itemView.findViewById(R.id.fragment_microcity_cover_image);
-                mMicroCityViewName = (TextView) itemView.findViewById(R.id.fragment_microcity_name_text);
-                mMicroCityViewAddress = (TextView) itemView.findViewById(R.id.fragment_microcity_address_text);
-                mMicroCityViewDistance = (TextView) itemView.findViewById(R.id.fragment_microcity_distance_text);
-                mMicroCityViewTime = (TextView) itemView.findViewById(R.id.fragment_microcity_time_text);
+                mVenueName = (TextView) itemView.findViewById(R.id.venue_name);
+                mVenueAddress = (TextView) itemView.findViewById(R.id.venue_address);
+                mVenueDistance = (TextView) itemView.findViewById(R.id.venue_distance);
+                mVenueMaps = (ImageView) itemView.findViewById(R.id.venue_maps);
             }
         }
     }

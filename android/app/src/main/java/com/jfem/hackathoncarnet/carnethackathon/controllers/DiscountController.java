@@ -66,7 +66,7 @@ public class DiscountController {
                 discount.setMicrocityId(discountJSON.getInt("microcity.id"));
                 discount.setServiceName(discountJSON.getString("service.name"));
                 discount.setServicePosition(new Coordinates(discountJSON.getLong("service.location.lat"),discountJSON.getLong("service.location.lng")));
-                discount.setServiceCategoryName(discountJSON.getJSONArray("service.categories").getJSONObject(0).getString("name"));
+                discount.setServiceCategoryName(discountJSON.getJSONArray("service.categories"));
                 discountArray.add(discount);
             }
         } catch (JSONException e) {

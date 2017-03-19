@@ -2,8 +2,7 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,8 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -38,7 +35,16 @@ public class VenueFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
 
-    private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
+    private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
+    private final static int[] colors = {
+            Color.parseColor("#DFE9C6"),
+            Color.parseColor("#FFF3BA"),
+            Color.parseColor("#FFD2A7"),
+            Color.parseColor("#BDDCE9"),
+            Color.parseColor("#DDBFE4"),
+            Color.parseColor("#EEABCA"),
+            Color.parseColor("#F4828C")
+    };
 
     private List<Venue> mData;
 
@@ -66,7 +72,7 @@ public class VenueFragment extends Fragment {
             public void onClick(View v) {
                 final List<Integer> selectedItems = new ArrayList<>();
                 AlertDialog dialog = new AlertDialog.Builder(getContext())
-                        .setTitle("Select The Difficulty Level")
+                        .setTitle("Filter by categories")
                         .setMultiChoiceItems(categories, null, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
@@ -117,6 +123,7 @@ public class VenueFragment extends Fragment {
                         venue.setName(venueJSON.getString("name"));
                         venue.setLocation(venueJSON.getJSONObject("location"));
                         venue.setCategories(venueJSON.getJSONArray("categories"));
+                        //venue.setUrl(venueJSON.getString("url"));
                         mData.add(venue);
                     }
 
@@ -144,4 +151,5 @@ public class VenueFragment extends Fragment {
 
         ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
+
 }

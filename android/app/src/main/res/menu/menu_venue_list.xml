@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/info_venue"
+        android:icon="@drawable/ic_info_outline"
+        android:title="More information" />
+
+    <item android:id="@+id/map_venue"
+        android:icon="@drawable/ic_map"
+        android:title="See in Maps" />
+
+</menu>

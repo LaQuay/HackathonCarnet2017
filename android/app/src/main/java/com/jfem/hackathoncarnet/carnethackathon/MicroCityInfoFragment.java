@@ -2,8 +2,6 @@ package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -14,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -29,8 +26,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jfem.hackathoncarnet.carnethackathon.adapters.VenueAdapter;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
@@ -169,7 +164,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
 
     private void addServicesMarkers(ArrayList<Service> services) {
         try {
-            servicesMarkers = new ArrayList<Marker>();
+            servicesMarkers = new ArrayList<>();
             for (int i = 0; i < services.size(); ++i) {
                 Service currentService = services.get(i);
 

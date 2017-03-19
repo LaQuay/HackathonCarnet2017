@@ -17,6 +17,35 @@ module.exports = function (app) {
             }
         });
     });
+    
+     app.get('/bigiot/access/promotions', function (req, res) {
+         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, datacities) {
+             const status = treatError(err);
+             if (status === 200) {
+                 const microCities = JSON.parse(datacities.toString());
+                 fs.readFile('./resources/promotions.json', 'utf8', function (err, dataPromotions) {
+                     const status = treatError(err);
+                     if (status === 200) {
+                        const promotions=JSON.parse(dataPromotions.toString());
+                        let returnedPromotions=[];
+                        promotions.forEach(function(promotion) {
+                            const microcityID=promotion.microcity-1;
+                            returnedPromotions.push({
+                                "microcity":microCities[microcityID],
+                                "discount":promotion.discount,
+                                "service":promotion.service
+                            });
+                        });
+                        res.json(returnedPromotions);
+                     } else {
+                        res.sendStatus(status);
+                     }
+                 });
+             } else {
+                 res.sendStatus(status);
+             }
+         });
+     });
 
     app.get('/bigiot/access/microcities/:id/services', function (req, res) {
         fs.readFile('./resources/micro-cities.json', 'utf8', function (err, data) {
@@ -25,7 +54,9 @@ module.exports = function (app) {
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(data.toString());
 
-                if (microCityID < 0 || microCityID >= microCities.length) return res.sendStatus(400);
+                if (microCityID < 0 || microCityID >= microCities.length || microCities[microCityID] === undefined) {
+                    return res.sendStatus(400);
+                }
 
                 const params = {
                     ll: microCities[microCityID].coordinates.lat + ',' + microCities[microCityID].coordinates.lng,
@@ -86,7 +117,7 @@ module.exports = function (app) {
 
     function treatError(err) {
         if (err) {
-            console.log(err);
+            console.log(err.errorType);
             if (err.errorType === 'param_error') return 400;
             else if (err.errorType === 'invalid_auth') return 403;
             else return 500;

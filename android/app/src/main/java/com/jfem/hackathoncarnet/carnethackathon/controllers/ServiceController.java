@@ -21,10 +21,10 @@ public class ServiceController {
 
     private static final String TAG = ServiceController.class.getSimpleName();
 
-    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
+    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
 
-    public static void serviceRequest(Context context, Location location, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
-        String url = API_BASE + "?ll=" + location.getLatitude() + "," + location.getLongitude();
+    public static void serviceRequest(Context context, Integer idMC, final AlertDialog.Builder builder, final ServiceController.ServiceResolvedCallback serviceResolvedCallback) {
+        String url = API_BASE + "/" + idMC + "/services";
         Log.e(TAG, url);
 
         // Request a string response from the provided URL.

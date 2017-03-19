@@ -260,9 +260,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
     }
 
-    @Override
     public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityMarker) {
-        Log.e(TAG, "Dist: " + distanceProperties.getDistance() + " Time: " + distanceProperties.getTime());
         --numDistanceInfoRequestLeft;
 
         microCityMarker.setDistance(distanceProperties.getDistance());
@@ -339,10 +337,10 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                         //builder.setMessage(servicesStr);
                         //builder.show();
 
-                        Location loc = new Location("pp");//provider name is unnecessary
-                        loc.setLatitude(microCityMarkerArray.get(mcid).getMarker().getPosition().latitude);//your coords of course
-                        loc.setLongitude(microCityMarkerArray.get(mcid).getMarker().getPosition().longitude);
-                        ServiceController.serviceRequest(getContext(), loc, builder, serviceResolvedCallback);
+                        //Location loc = new Location("pp");//provider name is unnecessary
+                        //loc.setLatitude(microCityMarkerArray.get(mcid).getMarker().getPosition().latitude);//your coords of course
+                        //loc.setLongitude(microCityMarkerArray.get(mcid).getMarker().getPosition().longitude);
+                        ServiceController.serviceRequest(getContext(), microCityMarkerArray.get(mcid).getMicroCity().getId(), builder, serviceResolvedCallback);
                     }
                 });
 
@@ -355,7 +353,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     public void onServiceResolved(ArrayList<Service> serviceArray, AlertDialog.Builder builder) {
         String mss = "";
         for (int i = 0; i < serviceArray.size(); ++i) {
-            Log.e(TAG, serviceArray.get(i).getName());
+            //Log.e(TAG, serviceArray.get(i).getName());
             mss += serviceArray.get(i).getName() + "\n";
         }
         builder.setMessage(mss);

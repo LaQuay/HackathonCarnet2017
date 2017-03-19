@@ -10,6 +10,16 @@ public class Service {
     private JSONObject location;
     private JSONArray categories;
 
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    private Integer rating;
+
     public String getId() {
         return id;
     }

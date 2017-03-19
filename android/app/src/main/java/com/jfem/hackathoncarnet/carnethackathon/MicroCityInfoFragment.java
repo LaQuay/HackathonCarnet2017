@@ -149,6 +149,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
             venue.setName(serviceArray.get(i).getName());
             venue.setLocation(serviceArray.get(i).getLocation());
             venue.setCategories(serviceArray.get(i).getCategories());
+            venue.setRating(serviceArray.get(i).getRating());
             mData.add(venue);
         }
 

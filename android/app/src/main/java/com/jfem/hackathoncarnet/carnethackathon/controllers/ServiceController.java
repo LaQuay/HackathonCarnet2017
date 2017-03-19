@@ -118,6 +118,7 @@ public class ServiceController {
                 service.setId(serviceJSON.getString("id"));
                 service.setName(serviceJSON.getString("name"));
                 service.setLocation(serviceJSON.getJSONObject("location"));
+                service.setRating(serviceJSON.getInt("rating"));
                 service.setCategories(serviceJSON.getJSONArray("categories"));
                 serviceArray.add(service);
             }

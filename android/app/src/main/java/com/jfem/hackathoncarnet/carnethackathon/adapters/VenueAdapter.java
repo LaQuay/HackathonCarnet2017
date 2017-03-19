@@ -152,10 +152,10 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
 
                                             try {
                                                 mName.setText(cardModel.getName());
-                                                mRating.setProgress(cardModel.getRating());
+                                                mRating.setProgress(cardModel.getRating() + 5);
                                                 mAddress.setText("Address: " + cardModel.getLocation().getString("address"));
                                                 mUrl.setText("Web page: " + cardModel.getUrl());
-                                                if (cardModel.getContact().has("phone")) {
+                                                if (cardModel.getContact() != null && cardModel.getContact().has("phone")) {
                                                     mPhone.setText("Phone number: " + cardModel.getContact().getString("phone"));
                                                 } else {
                                                     mPhone.setText("Phone number: -");

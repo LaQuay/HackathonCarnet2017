@@ -108,7 +108,17 @@ module.exports = function (app) {
 
                 foursquare.getVenues(params, function (err, results) {
                     if (treatError(res, err)) {
-                        res.json(buildFilteredVenues(results.response.venues));
+                        let carServices = JSON.parse(fs.readFileSync('./resources/car-services.json', 'utf8'));
+                        carServices.forEach(function(carService){
+                            /*add location to car services*/
+                            carService.location.lat=microCities[microCityID].coordinates.lat;
+                            carService.location.lng=microCities[microCityID].coordinates.lng;
+                            results.response.venues.push(carService);
+                        });
+
+                        res.json(buildFilteredVenues(results.response.venues).sort(function(a, b) {
+                            return parseFloat(a.location.distance) - parseFloat(b.location.distance);
+                        }));
                     }
                 });
             } else {
@@ -121,7 +131,9 @@ module.exports = function (app) {
         foursquare.getVenues(req.query, function (err, results) {
             const status = treatError(err);
             if (status === 200) {
-                res.json(buildFilteredVenues(results.response.venues));
+                res.json(buildFilteredVenues(results.response.venues).sort(function(a, b) {
+                    return parseFloat(a.location.distance) - parseFloat(b.location.distance);
+                }));
             } else {
                 res.sendStatus(status);
             }

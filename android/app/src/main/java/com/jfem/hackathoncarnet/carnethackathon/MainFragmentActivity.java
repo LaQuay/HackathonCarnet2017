@@ -142,11 +142,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private void addMarkerUserLocation(LatLng latLng) {
         animateCamera(latLng, 0.02d);
 
+        Bitmap bitmapMarker = Utility.getScaledBitmap(getContext(), R.drawable.placeholder, 100, 100);
+
         markerUserLocation = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
-                .title(location.getLatitude() + ", " + location.getLongitude()));
+                .title(location.getLatitude() + ", " + location.getLongitude())
+                .icon(BitmapDescriptorFactory.fromBitmap(bitmapMarker))
+        );
+        markerUserLocation.setAlpha(0.7f);
 
-        markerUserLocation.showInfoWindow();
+        //markerUserLocation.showInfoWindow();
     }
 
     private void animateCamera(LatLng latLng, Double offsetLatitude) {
@@ -201,7 +206,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         fakeMicroCity.setName("Biblioteca Rector Gabriel Ferraté");
         fakeMicroCity.setAddress("Carrer Jordi Girona, 1-3, 08034 Barcelona");
         fakeMicroCity.setCoordinates(new Coordinates(41.387614, 2.112405));
-        microCities.add(fakeMicroCity);
+        //microCities.add(fakeMicroCity);
         //END
 
         this.microCityMarkerArray = new ArrayList<>();

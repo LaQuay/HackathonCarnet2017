@@ -10,7 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.jfem.hackathoncarnet.carnethackathon.R;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +19,7 @@ import org.json.JSONObject;
 public class DistanceController {
     private static final String TAG = DistanceController.class.getSimpleName();
 
-    public static void distanceRequest(Context context, Location baseLocation, final MicroCityMarker microCityMarker, final DistanceController.DistanceResolvedCallback distanceResolvedCallback) {
+    public static void distanceRequest(Context context, Location baseLocation, final MicroCityView microCityMarker, final DistanceController.DistanceResolvedCallback distanceResolvedCallback) {
         double markerLat = microCityMarker.getMarker().getPosition().latitude;
         double markerLon = microCityMarker.getMarker().getPosition().longitude;
 
@@ -71,6 +71,6 @@ public class DistanceController {
     }
 
     public interface DistanceResolvedCallback {
-        void onDistanceResolved(DistanceInfo distanceProperties, MicroCityMarker microCityMarker);
+        void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityMarker);
     }
 }

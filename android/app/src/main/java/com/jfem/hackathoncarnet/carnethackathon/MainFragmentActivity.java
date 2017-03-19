@@ -1,6 +1,5 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -37,7 +36,7 @@ import com.jfem.hackathoncarnet.carnethackathon.controllers.ServiceController;
 import com.jfem.hackathoncarnet.carnethackathon.model.Coordinates;
 import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
 import com.jfem.hackathoncarnet.carnethackathon.model.MicroCity;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
+import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityView;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
 import com.jfem.hackathoncarnet.carnethackathon.utils.Utility;
 
@@ -66,7 +65,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
     private Location location;
     private Snackbar snackBar;
 
-    private ArrayList<MicroCityMarker> microCityMarkerArray = null;
+    private ArrayList<MicroCityView> microCityMarkerArray = null;
     private LatLng endPointLatLng = null;
     private Marker markerUserLocation;
     private int numDistanceInfoRequestLeft;
@@ -184,7 +183,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             for (int i = 0; i < microCityMarkerArray.size(); ++i) {
                 if (microCityMarkerArray.get(i).getMarker().getTag() == marker.getTag()) {
                     //TODO Open dialog with info instead of going
-                    MicroCityMarker microCityMarkerClicked = microCityMarkerArray.get(i);
+                    MicroCityView microCityMarkerClicked = microCityMarkerArray.get(i);
                     break;
                 }
             }
@@ -221,7 +220,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
             marker.setTag(i);
             marker.setAlpha(0.7f);
 
-            microCityMarkerArray.add(new MicroCityMarker(currentMicroCity, marker));
+            microCityMarkerArray.add(new MicroCityView(currentMicroCity, marker));
         }
     }
 
@@ -264,17 +263,16 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
     }
 
-    @Override
-    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityMarker microCityMarker) {
+    public void onDistanceResolved(DistanceInfo distanceProperties, MicroCityView microCityMarker) {
         --numDistanceInfoRequestLeft;
 
         microCityMarker.setDistance(distanceProperties.getDistance());
         microCityMarker.setTime(distanceProperties.getTime());
 
         if (this.numDistanceInfoRequestLeft == 0) {
-            Collections.sort(microCityMarkerArray, new Comparator<MicroCityMarker>() {
+            Collections.sort(microCityMarkerArray, new Comparator<MicroCityView>() {
                 @Override
-                public int compare(MicroCityMarker mcv1, MicroCityMarker mcv2) {
+                public int compare(MicroCityView mcv1, MicroCityView mcv2) {
                     if (mcv1.getTime() > mcv2.getTime()) return 1;
                     else if (mcv1.getTime() < mcv2.getTime()) return -1;
                     else {

@@ -3,21 +3,13 @@ package com.jfem.hackathoncarnet.carnethackathon.controllers;
 import android.content.Context;
 import android.location.Location;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.jfem.hackathoncarnet.carnethackathon.R;
-import com.jfem.hackathoncarnet.carnethackathon.VenueFragment;
-import com.jfem.hackathoncarnet.carnethackathon.model.DistanceInfo;
-import com.jfem.hackathoncarnet.carnethackathon.model.MicroCityMarker;
 import com.jfem.hackathoncarnet.carnethackathon.model.Service;
-import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
 import org.json.JSONArray;
 import org.json.JSONException;

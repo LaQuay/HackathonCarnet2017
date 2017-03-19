@@ -143,7 +143,7 @@ public class VenueFragment extends Fragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.cardview_venue, parent, false);
+                    .inflate(R.layout.item_microcity_venue_fragment, parent, false);
             return new ViewHolder(view);
         }
 

@@ -2,13 +2,13 @@ package com.jfem.hackathoncarnet.carnethackathon.model;
 
 import com.google.android.gms.maps.model.Marker;
 
-public class MicroCityMarker {
+public class MicroCityView {
     private MicroCity microCity;
     private Marker marker;
     private double time;
     private double distance;
 
-    public MicroCityMarker(MicroCity microCity, Marker marker) {
+    public MicroCityView(MicroCity microCity, Marker marker) {
         this.microCity = microCity;
         this.marker = marker;
     }

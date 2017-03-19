@@ -1,50 +1,65 @@
-[
-  {"microcity":3,
-    "promotions":[{
-      "discount":"5 Euros",
-      "service":{
+[{
+  "microcity":3,
+  "discount":"5 Euros",
+  "service":{
+    "id": "NA",
+    "name": "Charging station",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
         "id": "NA",
-        "name": "Charging station",
-        "location": {
-          "distance": 0
-        },
-        "categories": [
-          {
-            "id": "NA",
-            "name": "Charging station"
-          }
-        ]
+        "name": "Charging station"
       }
-    },{
-      "discount":"5 Euros",
-      "service":{
-        "id": "NA",
-        "name": "ITV",
-        "location": {
-          "distance": 0
-        },
-        "categories": [
-          {
-            "id": "NA",
-            "name": "ITV"
-          }
-        ]
-      }
-    },{
-      "discount":"5 Euros",
-      "service":{
-        "id": "NA",
-        "name": "Car Wash",
-        "location": {
-          "distance": 0
-        },
-        "categories": [
-          {
-            "id": "NA",
-            "name": "Car Wash"
-          }
-        ]
-      }
-    }]
+    ]
   }
-]
+},{
+  "microcity":3,
+  "discount":"5 Euros",
+  "service":{
+    "id": "NA",
+    "name": "ITV",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "ITV"
+      }
+    ]
+  }
+},{
+  "microcity":3,
+  "discount":"5 Euros",
+  "service":{
+    "id": "NA",
+    "name": "Car Wash",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Car Wash"
+      }
+    ]
+  }
+},{
+  "microcity":2,
+  "discount":"2 Euros",
+  "service":{
+    "id": "NA",
+    "name": "Car Wash",
+    "location": {
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Car Wash"
+      }
+    ]
+  }
+}]

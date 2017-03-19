@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.jfem.hackathoncarnet.carnethackathon.R;
 import com.jfem.hackathoncarnet.carnethackathon.controllers.ImageController;
+import com.jfem.hackathoncarnet.carnethackathon.model.Discount;
 import com.jfem.hackathoncarnet.carnethackathon.model.Venue;
 
 import org.json.JSONArray;
@@ -93,10 +94,10 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
             final Discount cardModel = data.get(position);
-            final String name = cardModel.getName();
-            final String microcity = cardModel.getMicroCity();
-            final String value = cardModel.getValue();
-            final JSONArray categories = cardModel.getCategories();
+            final String name = cardModel.getServiceName();
+            final String microcity = cardModel.getMicrocityId() +"";
+            final String value = cardModel.getDiscount();
+            final JSONArray categories = cardModel.getServiceCategoryName();
 
             Integer category = getCategoryColor(categories);
 

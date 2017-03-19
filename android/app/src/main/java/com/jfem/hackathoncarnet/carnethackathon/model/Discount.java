@@ -1,5 +1,7 @@
 package com.jfem.hackathoncarnet.carnethackathon.model;
 
+import org.json.JSONArray;
+
 /**
  * Created by francescdepuigguixe on 19/3/17.
  */
@@ -9,7 +11,7 @@ public class Discount {
     private String discount;
     private String serviceName;
     private Coordinates servicePosition;
-    private String serviceCategoryName;
+    private JSONArray serviceCategoryName;
 
     public Integer getMicrocityId() {
         return microcityId;
@@ -43,11 +45,11 @@ public class Discount {
         this.servicePosition = servicePosition;
     }
 
-    public String getServiceCategoryName() {
+    public JSONArray getServiceCategoryName() {
         return serviceCategoryName;
     }
 
-    public void setServiceCategoryName(String serviceCategoryName) {
+    public void setServiceCategoryName(JSONArray serviceCategoryName) {
         this.serviceCategoryName = serviceCategoryName;
     }
 }

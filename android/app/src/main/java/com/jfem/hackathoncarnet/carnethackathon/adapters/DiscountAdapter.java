@@ -46,7 +46,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
     private Context context;
     private Drawable[] icons;
 
-    public DiscountAdapter(List<Discount> data, Context context, VenueAdapter.OnItemClickListener listener) {
+    public DiscountAdapter(List<Discount> data, Context context) {
         this.data = data;
         this.context = context;
         //this.listener = listener;

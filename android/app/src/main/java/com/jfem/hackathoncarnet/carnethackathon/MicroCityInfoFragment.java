@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,18 +39,14 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
     private final static String API_BASE = "";
-
+    private static final int DEFAULT_ZOOM = 11;
+    private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private View rootView;
     private MapView mapView;
     private GoogleMap mMap;
-    private TextView locationText;
-
-    private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
+    private ArrayList<Marker> servicesMarkers;
     private List<Venue> mData;
     private int idMicroCity;
-
-    private ArrayList<Marker> servicesMarkers;
-
     private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
     public static MicroCityInfoFragment newInstance(int position, int idMicroCity) {
@@ -77,7 +72,6 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_microcity_info, container, false);
         mapView = (MapView) rootView.findViewById(R.id.fragment_mc_info_map_google);
-        locationText = (TextView) rootView.findViewById(R.id.fragment_mc_info_your_location_text);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +93,7 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 mData = new ArrayList<>();
-                                getServices(rootView);
+                                getServices();
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
@@ -120,11 +114,11 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         }
 
         mapView.getMapAsync(this);
-        getServices(rootView);
+        getServices();
         return rootView;
     }
 
-    private void getServices(final View rootView) {
+    private void getServices() {
         ServiceController.serviceByMCIdRequest(getContext(), this.idMicroCity, serviceResolvedCallback);
     }
 
@@ -147,7 +141,29 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         }
         RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_mc_info_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter(new VenueAdapter(mData, getContext()));
+        mRecyclerView.setAdapter(new VenueAdapter(mData, getContext(), new VenueAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Venue item) {
+                try {
+                    double lat = Double.parseDouble(item.getLocation().getString("lat"));
+                    double lng = Double.parseDouble(item.getLocation().getString("lng"));
+
+                    Marker marker = null;
+                    for (int i = 0; i < servicesMarkers.size(); ++i) {
+                        Marker currentMarker = servicesMarkers.get(i);
+                        if (lat == currentMarker.getPosition().latitude &&
+                                lng == currentMarker.getPosition().longitude) {
+                            marker = currentMarker;
+                        }
+                    }
+                    if (marker != null) {
+                        focusOnMarker(marker);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }));
 
         addServicesMarkers(serviceArray);
     }
@@ -168,18 +184,16 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
             for (int i = 0; i < services.size(); ++i) {
                 Service currentService = services.get(i);
 
-                final Marker marker;
-                    marker = mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(currentService.getLocation().getDouble("lat"), currentService.getLocation().getDouble("lng")))
-                            .title(currentService.getName())
-                    );
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(currentService.getLocation().getDouble("lat"), currentService.getLocation().getDouble("lng")))
+                        .title(currentService.getName())
+                );
                 marker.setTag(i);
                 marker.setAlpha(0.7f);
                 servicesMarkers.add(marker);
             }
 
             moveCameraToShowAllMarkers();
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -198,14 +212,18 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
 
     private void focusOnMarker(Marker marker) {
         marker.showInfoWindow();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom));
+        animateCamera(marker.getPosition(), null);
     }
 
-
+    private void animateCamera(LatLng latLng, Double offsetLatitude) {
+        if (offsetLatitude != null) {
+            latLng = new LatLng(latLng.latitude + offsetLatitude, latLng.longitude);
+        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        Log.e(TAG, "CLICK");
         if (servicesMarkers != null) {
             for (int i = 0; i < servicesMarkers.size(); ++i) {
                 if (servicesMarkers.get(i).getTag() == marker.getTag()) {
@@ -215,7 +233,6 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
                 }
             }
         }
-
         return true;
     }
 }

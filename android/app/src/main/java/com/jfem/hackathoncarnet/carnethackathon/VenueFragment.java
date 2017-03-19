@@ -129,7 +129,7 @@ public class VenueFragment extends Fragment {
 
                     RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    mRecyclerView.setAdapter(new VenueAdapter(mData, getContext()));
+                    mRecyclerView.setAdapter(new VenueAdapter(mData, getContext(), null));
 
                 } catch (JSONException e) {
                     e.printStackTrace();

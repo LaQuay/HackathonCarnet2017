@@ -29,9 +29,6 @@ import java.util.List;
 
 public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> {
 
-    private List<Venue> data;
-    private Context context;
-
     private final static CharSequence[] categories = {"Food", "Art", "College", "Sport", "Shop", "Station"};
     private final static int[] colors = {
             Color.parseColor("#DFE9C6"),
@@ -42,11 +39,15 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             Color.parseColor("#EEABCA"),
             Color.parseColor("#F4828C")
     };
+    private final OnItemClickListener listener;
+    private List<Venue> data;
+    private Context context;
     private Drawable[] icons;
 
-    public VenueAdapter(List<Venue> data, Context context) {
+    public VenueAdapter(List<Venue> data, Context context, OnItemClickListener listener) {
         this.data = data;
         this.context = context;
+        this.listener = listener;
         icons = new Drawable[]{
                 context.getResources().getDrawable(R.drawable.ic_restaurant),
                 context.getResources().getDrawable(R.drawable.ic_music_note),
@@ -87,7 +88,6 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         try {
@@ -105,6 +105,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
             holder.mVenueDistance.setText(distance);
             holder.mVenueCategory.setImageDrawable(icons[category]);
             holder.mVenueHeader.setBackgroundColor(colors[category]);
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(cardModel);
+                }
+            });
+
             holder.mCardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -148,6 +155,10 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Venue item);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

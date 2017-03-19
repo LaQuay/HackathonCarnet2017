@@ -18,7 +18,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHolder> {
 
@@ -85,15 +90,32 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
         try {
             final Discount cardModel = data.get(position);
             final String name = cardModel.getServiceName();
-            final String microcity = cardModel.getMicrocityId() +"";
+            final String microcity = cardModel.getMicrocityname();
             final String value = cardModel.getDiscount().replace("Euros","") + "€";
             final JSONArray categories = cardModel.getServiceCategoryName();
+
+            String date = "";
+            try {
+                Random r = new Random();
+                int low = 10;
+                int high = 50;
+                int result = r.nextInt(high-low) + low;
+                date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                Calendar c = Calendar.getInstance();
+                c.setTime(sdf.parse(date));
+                c.add(Calendar.DATE, result);  // number of days to add
+                date = sdf.format(c.getTime());  // dt is now the new date
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             Integer category = getCategoryColor(categories);
 
             holder.mDiscountName.setText(name);
             holder.mDiscountMicroCity.setText(microcity);
             holder.mDiscountValue.setText(value);
+            if (date != "") holder.mDiscountValidDate.setText("Valid until: " + date);
             holder.mCardView.setBackgroundColor(colors[category]);
         } catch (JSONException e) {
             Log.e("DiscountAdapter", e.toString());
@@ -107,7 +129,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
-        private TextView mDiscountName, mDiscountMicroCity, mDiscountValue;
+        private TextView mDiscountName, mDiscountMicroCity, mDiscountValue, mDiscountValidDate;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -115,6 +137,7 @@ public class DiscountAdapter extends RecyclerView.Adapter<DiscountAdapter.ViewHo
             mDiscountName = (TextView) itemView.findViewById(R.id.discount_name);
             mDiscountMicroCity = (TextView) itemView.findViewById(R.id.discount_microcity);
             mDiscountValue = (TextView) itemView.findViewById(R.id.discount_value);
+            mDiscountValidDate = (TextView) itemView.findViewById(R.id.discount_validdate);
         }
     }
 }

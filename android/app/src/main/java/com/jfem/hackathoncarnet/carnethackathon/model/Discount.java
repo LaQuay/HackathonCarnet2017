@@ -2,12 +2,9 @@ package com.jfem.hackathoncarnet.carnethackathon.model;
 
 import org.json.JSONArray;
 
-/**
- * Created by francescdepuigguixe on 19/3/17.
- */
-
 public class Discount {
     private Integer microcityId;
+    private String microcityname;
     private String discount;
     private String serviceName;
     private Coordinates servicePosition;
@@ -19,6 +16,14 @@ public class Discount {
 
     public void setMicrocityId(Integer microcityId) {
         this.microcityId = microcityId;
+    }
+
+    public String getMicrocityname() {
+        return microcityname;
+    }
+
+    public void setMicrocityname(String microcityname) {
+        this.microcityname = microcityname;
     }
 
     public String getDiscount() {

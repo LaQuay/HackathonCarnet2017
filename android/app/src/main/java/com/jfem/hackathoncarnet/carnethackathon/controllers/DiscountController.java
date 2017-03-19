@@ -64,6 +64,7 @@ public class DiscountController {
                 Discount discount = new Discount();
                 discount.setDiscount(discountJSON.getString("discount"));
                 discount.setMicrocityId(discountJSON.getJSONObject("microcity").getInt("id"));
+                discount.setMicrocityname(discountJSON.getJSONObject("microcity").getString("name"));
                 discount.setServiceName(discountJSON.getJSONObject("service").getString("name"));
 
                 JSONObject locationJSON = discountJSON.getJSONObject("service").getJSONObject("location");

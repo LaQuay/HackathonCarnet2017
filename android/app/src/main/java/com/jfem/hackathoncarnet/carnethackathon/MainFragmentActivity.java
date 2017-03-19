@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,6 +54,7 @@ import static android.app.Activity.RESULT_OK;
 public class MainFragmentActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         MicroCityController.MicroCityResolvedCallback, DistanceController.DistanceResolvedCallback, ServiceController.ServiceResolvedCallback {
     public static final String TAG = MainFragmentActivity.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private static final int DEFAULT_ZOOM = 11;
     private View baseSnackBarView;
     private View rootView;
@@ -72,8 +74,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
 
     private ServiceController.ServiceResolvedCallback serviceResolvedCallback;
 
-    public static MainFragmentActivity newInstance() {
-        return new MainFragmentActivity();
+    public static MainFragmentActivity newInstance(int position) {
+        MainFragmentActivity fragment = new MainFragmentActivity();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, position);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -251,7 +257,7 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                             Toast.makeText(getActivity(), "Show services", Toast.LENGTH_SHORT).show();
 
                             //TODO Change valid ID
-                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(1);
+                            Fragment microCityInfoFragment = MicroCityInfoFragment.newInstance(MainActivity.SECTION_MICROCITY_INFO_FRAGMENT, 1);
                             getActivity().getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.main_container, microCityInfoFragment, MicroCityInfoFragment.TAG)
                                     .addToBackStack(null)
@@ -389,5 +395,12 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
         }
         builder.setMessage(Html.fromHtml(mss));
         builder.show();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 }

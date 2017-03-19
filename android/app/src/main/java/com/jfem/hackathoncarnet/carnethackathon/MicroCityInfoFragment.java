@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import java.util.List;
 
 public class MicroCityInfoFragment extends Fragment {
     public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_ID_MICROCITY = "microcity";
     private final static String API_BASE = "";
 
@@ -40,9 +42,10 @@ public class MicroCityInfoFragment extends Fragment {
     private List<MicroCityView> mData;
     private int idMicroCity;
 
-    public static MicroCityInfoFragment newInstance(int idMicroCity) {
+    public static MicroCityInfoFragment newInstance(int position, int idMicroCity) {
         MicroCityInfoFragment fragment = new MicroCityInfoFragment();
         Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, position);
         args.putInt(ARG_ID_MICROCITY, idMicroCity);
         fragment.setArguments(args);
         return fragment;
@@ -128,6 +131,13 @@ public class MicroCityInfoFragment extends Fragment {
             }
         });
         queue.add(stringRequest);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
     private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {

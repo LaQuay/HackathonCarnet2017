@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,16 +33,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VenueFragment extends Fragment {
-
     public final static String TAG = VenueFragment.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/services";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
 
     private List<Venue> mData;
 
-    public static VenueFragment newInstance() {
-        return new VenueFragment();
+    public static VenueFragment newInstance(int position) {
+        VenueFragment fragment = new VenueFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, position);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -132,6 +137,13 @@ public class VenueFragment extends Fragment {
         queue.add(stringRequest);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
     private class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> {
 
         private List<Venue> data;
@@ -189,9 +201,6 @@ public class VenueFragment extends Fragment {
                 mVenueDistance = (TextView) itemView.findViewById(R.id.venue_distance);
                 mVenueMaps = (ImageView) itemView.findViewById(R.id.venue_maps);
             }
-
         }
-
     }
-
 }

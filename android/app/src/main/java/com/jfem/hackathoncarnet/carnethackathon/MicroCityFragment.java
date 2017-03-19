@@ -1,5 +1,6 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -33,13 +34,18 @@ import java.util.List;
 
 public class MicroCityFragment extends Fragment {
     public final static String TAG = MicroCityFragment.class.getSimpleName();
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private List<MicroCityView> mData;
 
-    public static MicroCityFragment newInstance() {
-        return new MicroCityFragment();
+    public static MicroCityFragment newInstance(int position) {
+        MicroCityFragment fragment = new MicroCityFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, position);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -122,6 +128,13 @@ public class MicroCityFragment extends Fragment {
             }
         });
         queue.add(stringRequest);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        ((MainActivity) context).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
     private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {

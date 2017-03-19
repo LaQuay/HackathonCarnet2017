@@ -15,13 +15,20 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static final int SECTION_MAIN_FRAGMENT = 1;
+    public static final int SECTION_MICROCITY_FRAGMENT = 2;
+    public static final int SECTION_VENUE_FRAGMENT = 3;
+    public static final int SECTION_DISCOUNTS_FRAGMENT = 4;
+    public static final int SECTION_MICROCITY_INFO_FRAGMENT = 5;
     private DrawerLayout drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         //Check first item
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        onSectionAttached(SECTION_MAIN_FRAGMENT);
     }
 
     @Override
@@ -78,16 +86,16 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         String fragmentTAG = null;
         if (id == R.id.nav_around_me) {
-            fragment = MainFragmentActivity.newInstance();
+            fragment = MainFragmentActivity.newInstance(SECTION_MAIN_FRAGMENT);
             fragmentTAG = MainFragmentActivity.TAG;
         } else if (id == R.id.nav_by_microcity) {
-            fragment = MicroCityFragment.newInstance();
+            fragment = MicroCityFragment.newInstance(SECTION_MICROCITY_FRAGMENT);
             fragmentTAG = MicroCityFragment.TAG;
         } else if (id == R.id.nav_by_filter) {
-            fragment = VenueFragment.newInstance();
+            fragment = VenueFragment.newInstance(SECTION_VENUE_FRAGMENT);
             fragmentTAG = VenueFragment.TAG;
         } else if (id == R.id.nav_by_discounts) {
-            fragment = DiscountsFragment.newInstance();
+            fragment = DiscountsFragment.newInstance(SECTION_DISCOUNTS_FRAGMENT);
             fragmentTAG = DiscountsFragment.TAG;
         }
 
@@ -103,5 +111,38 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void onSectionAttached(int number) {
+        String mTitle;
+        switch (number) {
+            case SECTION_MAIN_FRAGMENT:
+                //mTitle = getString(R.string.title_forecast);
+                mTitle = "Around Me";
+                break;
+
+            case SECTION_MICROCITY_FRAGMENT:
+                mTitle = "Search Microcity";
+                break;
+
+            case SECTION_VENUE_FRAGMENT:
+                mTitle = "Search Services";
+                break;
+
+            case SECTION_DISCOUNTS_FRAGMENT:
+                mTitle = "Search Discounts";
+                break;
+
+            case SECTION_MICROCITY_INFO_FRAGMENT:
+                mTitle = "Microcity information";
+                break;
+
+            default:
+                mTitle = getString(R.string.app_name);
+        }
+
+        if (toolbar != null) {
+            toolbar.setTitle(mTitle);
+        }
     }
 }

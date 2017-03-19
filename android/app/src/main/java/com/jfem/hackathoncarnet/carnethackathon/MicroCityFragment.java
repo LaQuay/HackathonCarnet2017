@@ -1,10 +1,13 @@
 package com.jfem.hackathoncarnet.carnethackathon;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,15 +43,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MicroCityFragment extends Fragment implements DistanceController.DistanceResolvedCallback {
+
     public final static String TAG = MicroCityFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
-    private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
+
     private View rootView;
     private ArrayList<MicroCityView> microCityViewArray;
     private Location location;
     private DistanceController.DistanceResolvedCallback distanceResolvedCallback;
     private int numDistanceInfoRequestLeft;
+
+    private Integer rangeDistance = 20000;
+    private Integer rangeDistanceCopy = 20000;
 
     public static MicroCityFragment newInstance(int position) {
         MicroCityFragment fragment = new MicroCityFragment();
@@ -69,6 +78,64 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
 
         distanceResolvedCallback = this;
 
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button_microcity);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                alert.setTitle("Search area");
+                alert.setMessage("Filter microcities in a radius");
+                alert.setPositiveButton("Filter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getServices();
+                        rangeDistanceCopy = rangeDistance;
+                        dialog.cancel();
+                    }
+                });
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        rangeDistance = rangeDistanceCopy;
+                        dialog.cancel();
+                    }
+                });
+                alert.setCancelable(false);
+
+                LinearLayout linear = new LinearLayout(getContext());
+
+                linear.setOrientation(LinearLayout.VERTICAL);
+                final TextView text = new TextView(getContext());
+                text.setPadding(50, 20, 0, 0);
+                text.setText(rangeDistance + "m");
+
+                SeekBar seek = new SeekBar(getContext());
+                seek.setMax(20000);
+                seek.setProgress(rangeDistance);
+                seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        rangeDistance = progress;
+                        text.setText(rangeDistance + "m");
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
+
+                linear.addView(seek);
+                linear.addView(text);
+
+                alert.setView(linear);
+                alert.show();
+            }
+        });
         getServices();
         return rootView;
     }
@@ -127,6 +194,11 @@ public class MicroCityFragment extends Fragment implements DistanceController.Di
         --numDistanceInfoRequestLeft;
         if (this.numDistanceInfoRequestLeft == 0) {
             microCityViewArray = Utility.sortMicroCityByDistanceTime(microCityViewArray);
+            for (int i = 0; i < microCityViewArray.size(); i++) {
+                if (microCityViewArray.get(i).getDistance() * 1000 > rangeDistance) {
+                    microCityViewArray.remove(i--);
+                }
+            }
 
             RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.venues_recycler_view);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));

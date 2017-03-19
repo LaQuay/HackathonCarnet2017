@@ -169,7 +169,7 @@ module.exports = function (app) {
                     lng: venue.location.lng,
                     distance: venue.location.distance
                 },
-                stats: venue.stats,
+                rating: venue.rating,
                 url: venue.url,
                 contact: venue.contact,
                 categories: buildFilteredCategories(venue.categories)

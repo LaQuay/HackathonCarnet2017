@@ -31,26 +31,33 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroCityFragment extends Fragment {
-    public final static String TAG = MicroCityFragment.class.getSimpleName();
-    private final static String API_BASE = "https://carnet-hack.herokuapp.com/bigiot/access/microcities";
+public class MicroCityInfoFragment extends Fragment {
+    public final static String TAG = MicroCityInfoFragment.class.getSimpleName();
+    private static final String ARG_ID_MICROCITY = "microcity";
+    private final static String API_BASE = "";
 
     private final static CharSequence[] categories = {"Food", "Coffee", "Nightlife", "Fun", "Shopping"};
     private List<MicroCityView> mData;
+    private int idMicroCity;
 
-    public static MicroCityFragment newInstance() {
-        return new MicroCityFragment();
+    public static MicroCityInfoFragment newInstance(int idMicroCity) {
+        MicroCityInfoFragment fragment = new MicroCityInfoFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_ID_MICROCITY, idMicroCity);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mData = new ArrayList<>();
+        this.idMicroCity = getArguments().getInt(ARG_ID_MICROCITY);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_venue, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_microcity_info, container, false);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.filter_button);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +90,7 @@ public class MicroCityFragment extends Fragment {
                 dialog.show();
             }
         });
-        getServices(rootView);
+        //getServices(rootView);
         return rootView;
     }
 
@@ -113,7 +120,6 @@ public class MicroCityFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -125,6 +131,7 @@ public class MicroCityFragment extends Fragment {
     }
 
     private class MicroCityViewAdapter extends RecyclerView.Adapter<MicroCityViewAdapter.ViewHolder> {
+
         private List<MicroCityView> data;
         private Drawable[] drawables = {
                 getResources().getDrawable(R.drawable.mc_1),

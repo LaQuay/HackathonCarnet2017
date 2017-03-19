@@ -78,4 +78,84 @@
       }
     ]
   }
+},{
+  "microcity":1,
+  "discount":"5 Euros",
+  "category":"Transport",
+  "service": {
+    "id": "NA",
+    "name": "TMB",
+    "location": {
+      "address":"Avinguda Diagonal, 208, 08018 Barcelona",
+      "lat": 41.4050329,
+      "lng": 2.19103419999999,
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Transport"
+      }
+    ]
+  }
+},{
+  "microcity":2,
+  "discount":"5 Euros",
+  "category":"Transport",
+  "service": {
+    "id": "NA",
+    "name": "TMB",
+    "location": {
+      "address":"Avinguda Diagonal, 557, 08029 Barcelona",
+      "lat": 41.3896623,
+      "lng": 2.13507600000003,
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Transport"
+      }
+    ]
+  }
+},{
+  "microcity":3,
+  "discount":"5 Euros",
+  "category":"Transport",
+  "service": {
+    "id": "NA",
+    "name": "TMB",
+    "location": {
+      "address":"Avinguda de la Granvia, 75, 08908 L'Hospitalet de Llobregat, Barcelona",
+      "lat": 41.359381,
+      "lng": 2.12894400000005,
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Transport"
+      }
+    ]
+  }
+},{
+  "microcity":4,
+  "discount":"5 Euros",
+  "category":"Transport",
+  "service": {
+    "id": "NA",
+    "name": "TMB",
+    "location": {
+      "address":"Universidad Politécnica de Cataluña, Jordi Girona, 1-3, 08034 Barcelona",
+      "lat": 41.387614,
+      "lng": 2.112405,
+      "distance": 0
+    },
+    "categories": [
+      {
+        "id": "NA",
+        "name": "Transport"
+      }
+    ]
+  }
 }]

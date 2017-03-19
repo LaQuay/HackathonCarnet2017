@@ -80,8 +80,6 @@ public class MicroCityInfoFragment extends Fragment implements ServiceController
         loc.setLongitude(getArguments().getDouble(ARG_LNG_MICROCITY));
         this.locMicroCity = loc;
 
-        Log.e(TAG, "ID-MC: " + this.idMicroCity + " loc: " + this.locMicroCity);
-
         serviceResolvedCallback = this;
     }
 

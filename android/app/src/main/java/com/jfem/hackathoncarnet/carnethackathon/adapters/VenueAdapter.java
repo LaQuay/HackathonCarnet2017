@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +94,9 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
         try {
             final Venue cardModel = data.get(position);
             final String name = cardModel.getName();
-            final String address = cardModel.getLocation().getString("address");
+            final String address = cardModel.getLocation().has("address")
+                    ? cardModel.getLocation().getString("address")
+                    : "-";
             final String distance = cardModel.getLocation().getString("distance") + "m";
             final String coordinates = cardModel.getLocation().getString("lat") + "," + cardModel.getLocation().getString("lng");
             final JSONArray categories = cardModel.getCategories();
@@ -141,7 +144,7 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.ViewHolder> 
                 }
             });
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("VenueAdapter", e.toString());
         }
     }
 

@@ -267,7 +267,6 @@ public class MainFragmentActivity extends Fragment implements OnMapReadyCallback
                 if (dist < 100000) {
                     final Integer selMCId = this.selectedMCId;
                     final LatLng selMCLoc = this.selectedMCLatLng;
-                    Log.e(TAG, "ID-MC: " + selMCId);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyAlertDialogStyle);
                     builder.setTitle("Arrived at destination");
                     builder.setCancelable(true);

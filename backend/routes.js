@@ -13,7 +13,7 @@ module.exports = function (app) {
             if (status === 200) {
                 res.json(JSON.parse(data.toString()));
             } else {
-                res.send(status);
+                res.sendStatus(status);
             }
         });
     });
@@ -25,7 +25,7 @@ module.exports = function (app) {
                 const microCityID = req.params.id - 1;
                 const microCities = JSON.parse(data.toString());
 
-                if (microCityID < 0 || microCityID >= microCities.length) return res.send(400);
+                if (microCityID < 0 || microCityID >= microCities.length) return res.sendStatus(400);
 
                 const params = {
                     ll: microCities[microCityID].coordinates.lat + ',' + microCities[microCityID].coordinates.lng,
@@ -37,7 +37,7 @@ module.exports = function (app) {
                     }
                 });
             } else {
-                res.send(status);
+                res.sendStatus(status);
             }
         });
     });
@@ -48,7 +48,7 @@ module.exports = function (app) {
             if (status === 200) {
                 res.json(buildFilteredVenues(results.response.venues));
             } else {
-                res.send(status);
+                res.sendStatus(status);
             }
         });
     });
